@@ -86,8 +86,6 @@ The objective is to evaluate performance differences and build a clean, modular,
 | BiLSTM               | 71%      |
 | DistilBERT           | **XX%**  |
 
-> Replace XX% with your actual results before publishing.
-
 ---
 
 ## 🏗 Project Structure
@@ -99,11 +97,6 @@ twitter_analysis/
 ├── scripts/ # Training and preprocessing scripts
 │ ├── data_cleaning.py
 │ ├── visualization.py
-│ ├── train_logistic.py
-│ ├── train_lstm.py
-│ ├── train_cnn.py
-│ └── train_distilbert.py
-│
 ├── requirements.txt
 ├── setup.py
 └── README.md
