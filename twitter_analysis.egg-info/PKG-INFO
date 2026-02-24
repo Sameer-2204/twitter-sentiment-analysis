@@ -1,0 +1,14 @@
+Metadata-Version: 2.2
+Name: twitter_analysis
+Version: 0.1
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: seaborn
+Requires-Dist: scikit-learn
+Requires-Dist: nltk
+Requires-Dist: wordcloud
+Requires-Dist: lightgbm
+Requires-Dist: tensorflow
+Requires-Dist: transformers
+Dynamic: requires-dist
