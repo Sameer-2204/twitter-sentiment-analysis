@@ -1,0 +1,251 @@
+/* ═══════════════════════════════════════════════════════════════
+   Twitter Sentiment Analysis Dashboard — Global Styles
+   Dark Liquid Glassmorphism Design System
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ────────────────────────────────────────────── */
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #0f1129;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --bg-card-border: rgba(255, 255, 255, 0.08);
+
+  /* Typography */
+  --text-primary: #e6f1ff;
+  --text-secondary: #8892b0;
+  --text-muted: #4a5568;
+
+  /* Accent */
+  --accent-primary: #4361ee;
+  --accent-hover: #3a86ff;
+  --accent-gradient: linear-gradient(135deg, #4361ee, #3a86ff);
+
+  /* Sentiment */
+  --sentiment-positive: #06d6a0;
+  --sentiment-negative: #ef476f;
+  --sentiment-neutral: #ffd166;
+  --sentiment-positive-bg: rgba(6, 214, 160, 0.12);
+  --sentiment-negative-bg: rgba(239, 71, 111, 0.12);
+  --sentiment-neutral-bg: rgba(255, 209, 102, 0.12);
+
+  /* Glass */
+  --glass-blur: 16px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --card-radius: 16px;
+
+  /* Fonts */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+
+  /* Typography Scale */
+  --text-caption: 0.75rem;   /* 12px */
+  --text-body: 0.875rem;     /* 14px */
+  --text-card-title: 1rem;   /* 16px */
+  --text-section: 1.5rem;    /* 24px */
+  --text-page: 2rem;         /* 32px */
+  --text-hero: 3rem;         /* 48px */
+  --text-hero-lg: 3.5rem;    /* 56px */
+}
+
+/* ── Reset & Base ─────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ── Selection ────────────────────────────────────────────────── */
+
+::selection {
+  background: rgba(67, 97, 238, 0.35);
+  color: #fff;
+}
+
+::-moz-selection {
+  background: rgba(67, 97, 238, 0.35);
+  color: #fff;
+}
+
+/* ── Scrollbar (dark) ─────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* ── Typography ───────────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--text-page); }
+h2 { font-size: var(--text-section); }
+h3 { font-size: var(--text-card-title); }
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* ── Monospace Numbers ────────────────────────────────────────── */
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Utility Classes ──────────────────────────────────────────── */
+
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-positive { color: var(--sentiment-positive); }
+.text-negative { color: var(--sentiment-negative); }
+.text-neutral  { color: var(--sentiment-neutral); }
+
+.caption {
+  font-size: var(--text-caption);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  transition: all 0.25s ease;
+}
+
+.btn-primary {
+  background: var(--accent-gradient);
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 20px rgba(67, 97, 238, 0.25);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 28px rgba(67, 97, 238, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--text-primary);
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--bg-card-border);
+  font-size: var(--text-body);
+  font-weight: 500;
+}
+
+.btn-glass:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* ── Inputs ───────────────────────────────────────────────────── */
+
+input, textarea, select {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--bg-card-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  :root {
+    --text-hero: 2rem;
+    --text-hero-lg: 2.5rem;
+    --text-page: 1.5rem;
+    --text-section: 1.25rem;
+  }
+}

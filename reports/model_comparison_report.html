@@ -1,0 +1,1330 @@
+
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Model Comparison Report</title>
+              <style>
+                body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.5; }
+                table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+                th { background: #f4f4f4; }
+                img { max-width: 100%; height: auto; border: 1px solid #ddd; margin: 8px 0; }
+                pre { white-space: pre-wrap; background: #fafafa; padding: 12px; border: 1px solid #eee; }
+              </style>
+            </head>
+            <body>
+              <h1>Twitter Sentiment Model Comparison Report</h1>
+              <p><strong>Evaluation split:</strong> valid_csv</p>
+              <h2>Model Comparison</h2>
+              <table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>model</th>
+      <th>accuracy</th>
+      <th>precision_macro</th>
+      <th>precision_weighted</th>
+      <th>recall_macro</th>
+      <th>recall_weighted</th>
+      <th>f1_macro</th>
+      <th>f1_weighted</th>
+      <th>roc_auc_ovr_macro</th>
+      <th>roc_auc_ovr_weighted</th>
+      <th>cohen_kappa</th>
+      <th>log_loss</th>
+      <th>avg_prediction_time_ms</th>
+      <th>timing_sample_size</th>
+      <th>total_prediction_time_seconds</th>
+      <th>model_size_mb</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>logistic</td>
+      <td>0.7362</td>
+      <td>0.7226</td>
+      <td>0.7528</td>
+      <td>0.7540</td>
+      <td>0.7362</td>
+      <td>0.7289</td>
+      <td>0.7406</td>
+      <td>0.9730</td>
+      <td>0.9611</td>
+      <td>0.7093</td>
+      <td>1.2125</td>
+      <td>0.0795</td>
+      <td>200</td>
+      <td>0.3876</td>
+      <td>0.9386</td>
+    </tr>
+  </tbody>
+</table>
+              <img src="figures/model_accuracy_f1_comparison.png" alt="Accuracy and F1 comparison">
+            
+<h2>LOGISTIC</h2>
+<h3>Core Metrics</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>model</th>
+      <th>accuracy</th>
+      <th>precision_macro</th>
+      <th>precision_weighted</th>
+      <th>recall_macro</th>
+      <th>recall_weighted</th>
+      <th>f1_macro</th>
+      <th>f1_weighted</th>
+      <th>roc_auc_ovr_macro</th>
+      <th>roc_auc_ovr_weighted</th>
+      <th>cohen_kappa</th>
+      <th>log_loss</th>
+      <th>avg_prediction_time_ms</th>
+      <th>timing_sample_size</th>
+      <th>total_prediction_time_seconds</th>
+      <th>model_size_mb</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>logistic</td>
+      <td>0.7362</td>
+      <td>0.7226</td>
+      <td>0.7528</td>
+      <td>0.7540</td>
+      <td>0.7362</td>
+      <td>0.7289</td>
+      <td>0.7406</td>
+      <td>0.9730</td>
+      <td>0.9611</td>
+      <td>0.7093</td>
+      <td>1.2125</td>
+      <td>0.0795</td>
+      <td>200</td>
+      <td>0.3876</td>
+      <td>0.9386</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Classification Report</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1-score</th>
+      <th>support</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.6579</td>
+      <td>0.6849</td>
+      <td>0.6711</td>
+      <td>73.0000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.7867</td>
+      <td>0.7757</td>
+      <td>0.7812</td>
+      <td>214.0000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.7674</td>
+      <td>0.7359</td>
+      <td>0.7513</td>
+      <td>852.0000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.7966</td>
+      <td>0.6104</td>
+      <td>0.6912</td>
+      <td>77.0000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.9135</td>
+      <td>0.9794</td>
+      <td>0.9453</td>
+      <td>97.0000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.9214</td>
+      <td>0.8719</td>
+      <td>0.8960</td>
+      <td>242.0000</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.6738</td>
+      <td>0.8630</td>
+      <td>0.7568</td>
+      <td>146.0000</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.8417</td>
+      <td>0.7312</td>
+      <td>0.7826</td>
+      <td>160.0000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.5000</td>
+      <td>0.7812</td>
+      <td>0.6098</td>
+      <td>32.0000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.6133</td>
+      <td>0.6845</td>
+      <td>0.6470</td>
+      <td>336.0000</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.3214</td>
+      <td>0.6923</td>
+      <td>0.4390</td>
+      <td>13.0000</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.8235</td>
+      <td>1.0000</td>
+      <td>0.9032</td>
+      <td>14.0000</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.7899</td>
+      <td>0.7899</td>
+      <td>0.7899</td>
+      <td>119.0000</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.7107</td>
+      <td>0.7414</td>
+      <td>0.7257</td>
+      <td>116.0000</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.7593</td>
+      <td>0.6386</td>
+      <td>0.6937</td>
+      <td>415.0000</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0.7586</td>
+      <td>0.5280</td>
+      <td>0.6226</td>
+      <td>125.0000</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0.8720</td>
+      <td>0.8755</td>
+      <td>0.8737</td>
+      <td>249.0000</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0.7863</td>
+      <td>0.8214</td>
+      <td>0.8035</td>
+      <td>112.0000</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0.8025</td>
+      <td>0.7311</td>
+      <td>0.7651</td>
+      <td>528.0000</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0.3555</td>
+      <td>0.5431</td>
+      <td>0.4297</td>
+      <td>197.0000</td>
+    </tr>
+    <tr>
+      <th>accuracy</th>
+      <td>0.7362</td>
+      <td>0.7362</td>
+      <td>0.7362</td>
+      <td>0.7362</td>
+    </tr>
+    <tr>
+      <th>macro avg</th>
+      <td>0.7226</td>
+      <td>0.7540</td>
+      <td>0.7289</td>
+      <td>4117.0000</td>
+    </tr>
+    <tr>
+      <th>weighted avg</th>
+      <td>0.7528</td>
+      <td>0.7362</td>
+      <td>0.7406</td>
+      <td>4117.0000</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Figures</h3>
+<p><strong>Confusion Matrix</strong></p><img src="figures/logistic_confusion_matrix.png" alt="confusion_matrix">
+<p><strong>Roc Curve</strong></p><img src="figures/logistic_roc_curve.png" alt="roc_curve">
+<p><strong>Precision Recall Curve</strong></p><img src="figures/logistic_precision_recall_curve.png" alt="precision_recall_curve">
+<p><strong>Length Distribution</strong></p><img src="figures/logistic_length_distribution.png" alt="length_distribution">
+<h3>Error Analysis</h3>
+<p><strong>Most confident correct predictions</strong></p><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>true_label</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>The Euro is at the weakest level it’s been in 20 years. It is now at par with the dollar.</td>
+      <td>8</td>
+      <td>8</td>
+      <td>0.998543</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>U.S. CRUDE OIL FUTURES FALL BY $3 TO $93.30</td>
+      <td>6</td>
+      <td>6</td>
+      <td>0.998444</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>U.S. CRUDE OIL FUTURES FALL $4 TO $95.88 A BARREL</td>
+      <td>6</td>
+      <td>6</td>
+      <td>0.998220</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>BRENT CRUDE OIL FUTURES FALL $5 TO $101.92 A BARREL</td>
+      <td>6</td>
+      <td>6</td>
+      <td>0.998107</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>$KBWD - Invesco KBW High Dividend Yield Financial ETF declares monthly distribution of $0.1454  https://t.co/G8K31nXLuN</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0.997850</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>$MTX - Minerals Technologies declares $0.05 dividend  https://t.co/GjZRyHb0SE</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0.996229</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>$MAC - Macerich declares $0.15 dividend  https://t.co/S55uOL1qWd</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0.996229</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>$ATR - AptarGroup declares $0.38 dividend  https://t.co/tES0rvXfSP</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0.996229</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <td>$WBA - Walgreens Boots declares $0.48 dividend  https://t.co/lvRd5fu7VC</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0.996229</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Banner declares $0.44 dividend  https://t.co/E3uoKdbaTz</td>
+      <td>4</td>
+      <td>4</td>
+      <td>0.996229</td>
+      <td>5</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Most confident wrong predictions</strong></p><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>true_label</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$GORO: Gold Resource sold a total of 8,746 ounces of gold and 231,622 ounces of silver in Q2 2022 for a gold...  https://t.co/rFJOiD76eD</td>
+      <td>2</td>
+      <td>10</td>
+      <td>0.996851</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <td>A JPMorgan gold trader turned whistleblower lied to authorities about gold and silver price manipulation  https://t.co/CIolk3ef8e</td>
+      <td>12</td>
+      <td>10</td>
+      <td>0.986716</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>$GOLD - Barrick Gold: Trading At A Deep Discount To Fair Value.  https://t.co/l15uwCYorD #trading #economy #business</td>
+      <td>18</td>
+      <td>10</td>
+      <td>0.983095</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>$NGD - New Gold cuts full-year gold production guidance on flooding at Rainy River  https://t.co/OvBXdDUxXx</td>
+      <td>7</td>
+      <td>10</td>
+      <td>0.975327</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>$BARUF - Baru Gold raises $1.5M in financing to fund Sangihe gold mine project  https://t.co/FnfDr95QNc</td>
+      <td>2</td>
+      <td>10</td>
+      <td>0.971597</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>$GOLD - Barrick Gold maintains full-year production view after preliminary Q2 results  https://t.co/jdkSonjlfe</td>
+      <td>7</td>
+      <td>10</td>
+      <td>0.967580</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>$NFLX Q2 Earnings  - EPS: $3.20 vs $2.96 est  - Revs: $7.97B vs $8.04B est. - Shares are up 7.28% after hours</td>
+      <td>19</td>
+      <td>5</td>
+      <td>0.942803</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>$EGO: Eldorado Gold announces Q2 preliminary gold production of 113,462 ounces and maintains full year production...  https://t.co/gM7bosLILA</td>
+      <td>7</td>
+      <td>10</td>
+      <td>0.923199</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>Supreme Court rules that President Biden can shut down a Trump admin. program designed to restrict immigration at the southern border.  https://t.co/FI6Wo1Ba98</td>
+      <td>12</td>
+      <td>16</td>
+      <td>0.920681</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>$NNDM $SSYS - Stratasys stock gains after Nano Dimension acquires 12.12% stake  https://t.co/wY4bZOq1vG</td>
+      <td>19</td>
+      <td>13</td>
+      <td>0.913224</td>
+      <td>13</td>
+    </tr>
+  </tbody>
+</table>
+<h4>Misclassified Examples Per Class</h4>
+<p><strong>0</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mizuho says Wall Street is underestimating Kraft Heinz, a stock that can rally more than 25%  https://t.co/1UgwQWn5S2</td>
+      <td>15</td>
+      <td>0.639450</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>$FIGS - Figs stock falls after Goldman Sachs downgrades to ‘Sell’  https://t.co/Zj9fIdy96s</td>
+      <td>19</td>
+      <td>0.328562</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>$ACDVF $CGJTF - Air Canada stock presents ‘attractive buying opportunity’ after recent slide - Canaccord Genuity  https://t.co/kedmQUOYoD</td>
+      <td>19</td>
+      <td>0.322451</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>$GPS - The Gap downgraded at Deutsche Bank amid execution issues, executive exit  https://t.co/gmS4jzs8WM</td>
+      <td>19</td>
+      <td>0.298556</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>$CHNG $UNH - Change Healthcare added to positive catalyst list at Citi ahead of UNH trial  https://t.co/B51xuIC5mH</td>
+      <td>19</td>
+      <td>0.297651</td>
+      <td>17</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>1</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Reports Italy’s Draghi Has Not Submitted His Resignation To President - ANSA</td>
+      <td>16</td>
+      <td>0.890045</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Italy’s #Draghi Asks For Confidence Vote To Be Placed In Senate    $EUR</td>
+      <td>16</td>
+      <td>0.817888</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Welcome President Susan M. Collins! The international macroeconomist began her tenure as the 14th president and CEO of the @BostonFed on July 1. Collins previously served on the board of the @ChicagoFed. Read the article about President Collins:  https://t.co/OSM2kD4Dn5  https://t.co/goMMsfv29K</td>
+      <td>17</td>
+      <td>0.803266</td>
+      <td>40</td>
+    </tr>
+    <tr>
+      <td>Rising interest rates and ballooning credit card debt are a ‘double whammy,' economist says  https://t.co/myygFJIf5o</td>
+      <td>3</td>
+      <td>0.777274</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Sweden’s Riksbank may have to accelerate the pace of rate increases after a June inflation reading showed that prices rose faster than it expected  https://t.co/gXGJeYqga1</td>
+      <td>14</td>
+      <td>0.738912</td>
+      <td>25</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>2</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$GORO: Gold Resource sold a total of 8,746 ounces of gold and 231,622 ounces of silver in Q2 2022 for a gold...  https://t.co/rFJOiD76eD</td>
+      <td>10</td>
+      <td>0.996851</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <td>$BARUF - Baru Gold raises $1.5M in financing to fund Sangihe gold mine project  https://t.co/FnfDr95QNc</td>
+      <td>10</td>
+      <td>0.971597</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Hilcorp, Exxon Mobil, ConocoPhillips top greenhouse gas emitters among U.S. oil and gas companies  https://t.co/NAr6VXzIRx</td>
+      <td>6</td>
+      <td>0.872906</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Vertical Aerospace Secures Pre-Delivery Payment Commitment From American Airlines  https://t.co/qjKLiThGRY  https://t.co/vuOuqTu77q</td>
+      <td>19</td>
+      <td>0.795092</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <td>$TALO: Talos Energy provides Q2 updates; Average daily production between 65.0 and 65.5 thousand barrels of oil...  https://t.co/TCKu0MdbfW</td>
+      <td>6</td>
+      <td>0.789437</td>
+      <td>18</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>3</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Easy liquidity conditions in China are fueling a lucrative carry trade in bonds, with traders betting the gains will be sustained despite signs the central bank bank is moving toward normalizing monetary policy  https://t.co/tMmyN4Gdxu</td>
+      <td>1</td>
+      <td>0.819525</td>
+      <td>34</td>
+    </tr>
+    <tr>
+      <td>Italian government bonds slide as political turmoil put Prime Minister Mario Draghi’s government at risk of collapse, potentially leading to an early election  https://t.co/X3VkuXWAy4</td>
+      <td>16</td>
+      <td>0.732679</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <td>Celanese Corporation Prices an Additional €1.5 Billion of Permanent Financing for DuPont M&amp;amp;M Acquisition  https://t.co/KNiBOyWZDE</td>
+      <td>13</td>
+      <td>0.719943</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Longer maturity Treasury yields have scope to go higher still and the market is erring in pricing in Fed interest-rate cuts in the latter part of 2023, according to Franklin Templeton  https://t.co/EaKrtLN13D</td>
+      <td>1</td>
+      <td>0.683672</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>Longer maturity Treasury yields have scope to go higher still and the market is erring in pricing in Fed interest-rate cuts in the latter part of 2023, according to Franklin Templeton  https://t.co/KkTCLG66m2</td>
+      <td>1</td>
+      <td>0.683672</td>
+      <td>32</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>4</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Harleysville Financial Corporation Announces Regular Cash Dividend and Third Quarter Earnings for Fiscal Year 2022  https://t.co/abhIbBZmPK  https://t.co/zhRtSfEIpK</td>
+      <td>5</td>
+      <td>0.582508</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>$MTB - M&amp;amp;T Bank authorizes $3B in share repurchase program, declares preferred dividends  https://t.co/pyR2Rr6Nby</td>
+      <td>19</td>
+      <td>0.248109</td>
+      <td>14</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>5</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Orchid Island Capital Announces Estimated Second Quarter 2022 Results, July 2022 Monthly Dividend and June 30, 2022 RMBS Portfolio Characteristics  https://t.co/EqRoJTevvS  https://t.co/IXPHxdjv9b</td>
+      <td>4</td>
+      <td>0.519716</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Martin Midstream Partners Reports Second Quarter 2022 Financial Results, Increases Annual Guidance and Declares Quarterly Cash Distribution  https://t.co/zbjaGHlvmm  https://t.co/GRpMWOB4mf</td>
+      <td>4</td>
+      <td>0.497666</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <td>$AAPL - Apple likely to meet Q3 results, but all eyes on demand as iPhone 14 gets set to launch  https://t.co/n8HjOuWrKT</td>
+      <td>2</td>
+      <td>0.466699</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>These companies are likely to beat earnings expectations this season, Bank of America says  https://t.co/xUe6D6sbhN</td>
+      <td>7</td>
+      <td>0.458070</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>$JPM | JPMorgan Q2 22 Earnings:  - EPS: $2.76 (exp $2.88)  - Revenue: $31.63B (exp $31.98B)  - Temporarily Suspended Share Buybacks   - Investment Banking Revenue: $1.35B (exp $1.92B)</td>
+      <td>7</td>
+      <td>0.378295</td>
+      <td>28</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>6</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Copper supply shortages will be so "unprecedented and untenable" in coming years that it could derail the global shift away from fossil fuels, S&amp;amp;P Global says (via @climate)  https://t.co/sE4TuEGdva</td>
+      <td>10</td>
+      <td>0.690059</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <td>#Energy futures mostly lower before the open $XLE $GPS $SPY $QQQ $DIA $CL_F $NG_F  https://t.co/LzEmmlQJhI #economy #stockmarket</td>
+      <td>15</td>
+      <td>0.426293</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>Corn took out support on the Monthly and Weekly charts. Look for it to run down to Close The Gap at 606-608.</td>
+      <td>18</td>
+      <td>0.385919</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Expensive gasoline is keeping more US drivers off the road than the Covid-19 pandemic did at this time two years ago  https://t.co/esCTICoUwh</td>
+      <td>9</td>
+      <td>0.373520</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Goldman Sachs Revises Copper Price Targets For 3, 6, 12 Months  - 3-Month Forecast Revised To $6,700/T Vs. $8,650/T  - 6-Month Forecast Revised To $7,600/T Vs $10,500/T  - 12-Month Forecast Revised To $9,000/T Vs $12,000/T</td>
+      <td>14</td>
+      <td>0.368977</td>
+      <td>35</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>7</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$NGD - New Gold cuts full-year gold production guidance on flooding at Rainy River  https://t.co/OvBXdDUxXx</td>
+      <td>10</td>
+      <td>0.975327</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>$GOLD - Barrick Gold maintains full-year production view after preliminary Q2 results  https://t.co/jdkSonjlfe</td>
+      <td>10</td>
+      <td>0.967580</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>$EGO: Eldorado Gold announces Q2 preliminary gold production of 113,462 ounces and maintains full year production...  https://t.co/gM7bosLILA</td>
+      <td>10</td>
+      <td>0.923199</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>$CPA: Copa Holdings reports June traffic declined 3.4% from June 2019  https://t.co/wb5MXCaRL5</td>
+      <td>14</td>
+      <td>0.605511</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>PepsiCo reiterates outlook as second-quarter earnings top expectations  https://t.co/31eOBLq1Cn</td>
+      <td>5</td>
+      <td>0.602733</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>8</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Euro jumps on a report ECB will consider half-point rate hike  https://t.co/3hdnPTtOXr</td>
+      <td>1</td>
+      <td>0.534119</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Euro rallies and bund yields jump after half-percentage-point ECB rate hike  https://t.co/CDjztPozfk</td>
+      <td>1</td>
+      <td>0.455268</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>The euro rallies as traders raised bets on the scale of future policy tightening by the European Central Bank after it raised borrowing costs by more than expected  https://t.co/vxjpQvwspJ</td>
+      <td>1</td>
+      <td>0.442594</td>
+      <td>29</td>
+    </tr>
+    <tr>
+      <td>The euro traded below $1 for the first time in 20 years, reflecting both surging U.S. inflation that's raising expectations for Federal Reserve rate hikes as well as the energy crisis in the eurozone.  https://t.co/htoAWtY5yM  https://t.co/8T8jm3160a</td>
+      <td>1</td>
+      <td>0.428822</td>
+      <td>36</td>
+    </tr>
+    <tr>
+      <td>Japan's Yen Weakness Has Changed The Competitive Landscape.  https://t.co/mw5FxmRfT7 #markets #business #finance</td>
+      <td>18</td>
+      <td>0.222003</td>
+      <td>12</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>9</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>For the first time in two decades, one euro is worth the same as a single US dollar — here's why  https://t.co/wDH7M5okOL</td>
+      <td>8</td>
+      <td>0.907003</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Amid fears in Europe that the Nord Stream 1 pipeline’s planned maintenance shutdown could be extended, here’s a look at the energy alternatives if Russia turns off the gas taps  https://t.co/52JuXswBsf  https://t.co/S2s8tH9yQg</td>
+      <td>6</td>
+      <td>0.812733</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>Saudi Arabia will open its airspace to all airlines, including flights to and from Israel, in what's seen as a win for US President Joe Biden  https://t.co/zq6B4mXwjh</td>
+      <td>16</td>
+      <td>0.767030</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <td>A trader is pocketing big profits for breaking with the pack and placing a sizable bet that the Fed won’t increase the size of its interest-rate hikes  https://t.co/UxMRRUiPZH</td>
+      <td>1</td>
+      <td>0.661164</td>
+      <td>28</td>
+    </tr>
+    <tr>
+      <td>In today's Bloomberg Deals newsletter, we talk to the private equity firm of NFL great Steve Young, recap the epic Twitter filing and Unity does a $4 billion acquisition  https://t.co/K30fznG4EM</td>
+      <td>13</td>
+      <td>0.656669</td>
+      <td>30</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>10</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Goldman Sachs: Aluminium And Zinc Expected To Outperform Copper If Gas Flows Remain At Zero Post-NS1 Maintenance    #NordStream1</td>
+      <td>6</td>
+      <td>0.245251</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <td>JUST IN: Copper tumbles to its lowest level in 20 months as fears of a worldwide recession continue to mount  https://t.co/iFe363riNF</td>
+      <td>14</td>
+      <td>0.240614</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>UBS: Lowers Gold Forecast To $1,600/Oz At End-Sep And End-2022 (From $1,800 And $1,700, Respectively)  - End-June 2023 Target Is $1,650/Oz</td>
+      <td>14</td>
+      <td>0.210171</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <td>UBS: LOWERS GOLD FORECAST TO USD 1,600/OZ AT END-SEPTEMBER AND END-2022 (FROM USD 1,800 AND USD 1,700, RESPECTIVELY). END-JUNE 2023 TARGET IS USD 1,650/OZ</td>
+      <td>8</td>
+      <td>0.145548</td>
+      <td>24</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>11</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<p><strong>12</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A JPMorgan gold trader turned whistleblower lied to authorities about gold and silver price manipulation  https://t.co/CIolk3ef8e</td>
+      <td>10</td>
+      <td>0.986716</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>Supreme Court rules that President Biden can shut down a Trump admin. program designed to restrict immigration at the southern border.  https://t.co/FI6Wo1Ba98</td>
+      <td>16</td>
+      <td>0.920681</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Two New York state residents were charged in a $27 million fraud in which they allegedly raised money from foreign nationals for phony investments by claiming they had access to politicians like then-president Donald Trump  https://t.co/O4qdhXGbVX</td>
+      <td>16</td>
+      <td>0.373174</td>
+      <td>36</td>
+    </tr>
+    <tr>
+      <td>A judge in Tennessee temporarily blocked the Biden administration’s rules ensuring transgender people at schools and workplaces have access to bathrooms, locker rooms and sports teams  https://t.co/lbR7w52Ojz</td>
+      <td>16</td>
+      <td>0.371277</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <td>Three people have been charged in New York with conspiring to illegally possess about 100 pages of manuscripts related to the Eagles album “Hotel California”  https://t.co/zDR0YewDTF</td>
+      <td>9</td>
+      <td>0.340595</td>
+      <td>26</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>13</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$TELL: Tellurian to purchase natural gas assets from privately held EnSight IV Energy Partners and EnSight...  https://t.co/RFwnaFTer7</td>
+      <td>6</td>
+      <td>0.800503</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <td>Mobility app Marti will announce its planned merger with a blank-check company within weeks, a deal that marks the first IPO by a Turkish company via a SPAC in New York  https://t.co/MUwoT2xHKU</td>
+      <td>11</td>
+      <td>0.671874</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>$YHEKF - Yeahka Ramps Up E-Commerce Bid, But Investors Cash Out.  https://t.co/ykA9pFh9Qf #stockmarket #finance #trading</td>
+      <td>18</td>
+      <td>0.631883</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>$FFHL - Fuwei Films unit to merge with video-centric technology solution provider Baijiayun  https://t.co/T6kfi6Mt1q</td>
+      <td>2</td>
+      <td>0.449715</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>$SIMO $MXL - MaxLinear filed with China's antitrust regulator for planned Silicon Motion deal  https://t.co/mpivO5GVCR</td>
+      <td>12</td>
+      <td>0.397906</td>
+      <td>15</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>14</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SAUDI ARABIA IMPORTS AT LEAST 647,000 T OF RUSSIAN FUEL OIL IN APR-JUNE, MORE THAN DOUBLE IMPORTS A YEAR EARLIER- DATA, TRADERS</td>
+      <td>6</td>
+      <td>0.811019</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Small Business Expectations Disconnect.  https://t.co/mnHLnC0OxS #markets #finance #trading</td>
+      <td>18</td>
+      <td>0.703488</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>European leaders rushed to secure a handful of energy-supply deals, part of a broader, monthslong effort by the continent to reduce its reliance on energy from Russia   https://t.co/2YsaGQ1IY3</td>
+      <td>6</td>
+      <td>0.680628</td>
+      <td>28</td>
+    </tr>
+    <tr>
+      <td>The U.S. Economy Is Facing An Unusual Disconnect.  https://t.co/JsHUvbmwUh #stockmarket #investing #markets</td>
+      <td>18</td>
+      <td>0.671173</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>Inflation hits a fresh four-decade high of 8.1%, keeping up pressure on the Bank of Canada to deliver aggressive interest rate hikes  https://t.co/kojmxpCReb</td>
+      <td>1</td>
+      <td>0.643757</td>
+      <td>23</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>15</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Stock-market investors are still wagering that the US economy will avoid a recession even as the Fed and other central banks raise interest rates aggressively to get decades-high inflation under control  https://t.co/zkJUz0Nla4</td>
+      <td>1</td>
+      <td>0.737264</td>
+      <td>32</td>
+    </tr>
+    <tr>
+      <td>.@ines_ferre checks out this morning’s market and sector losses, Chinese stocks amid tech crackdowns and rising COVID cases, the U.S. dollar, and $WTI crude oil pricing.  https://t.co/f7LNtf3VWo</td>
+      <td>6</td>
+      <td>0.714414</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <td>Indices ETF's green again.  $AAPL at day high helping</td>
+      <td>18</td>
+      <td>0.604751</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <td>Stocks To Consider After June's Consumer Price Index Spike.  https://t.co/8fvWLWv23D #stockmarket #markets #stocks</td>
+      <td>14</td>
+      <td>0.602064</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>- US futures drop - Dollar advances - Treasury yields climb  Latest markets updates:  https://t.co/bd6nfV8LZm  https://t.co/xRYA1X638y</td>
+      <td>8</td>
+      <td>0.522832</td>
+      <td>16</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>16</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Joe Biden wanted to ostracize Saudi Arabia over human rights. That was before the price of oil hit the US economy  https://t.co/F5jIX0t47n</td>
+      <td>6</td>
+      <td>0.687716</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>Texas Democrats are getting a lift from voters passionate about gun control and abortion rights, but the goal of winning state races is hampered by what is shaping up to be one of the worst years ever for the party nationally  https://t.co/pJIz3nmdHQ</td>
+      <td>9</td>
+      <td>0.485042</td>
+      <td>42</td>
+    </tr>
+    <tr>
+      <td>The House panel investigating the assault on the US Capitol met with representatives of the Homeland Security Department’s watchdog who said the Secret Service isn’t cooperating with its investigation  https://t.co/UR1pDPEDqY</td>
+      <td>12</td>
+      <td>0.465438</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <td>One thing that would happen if Republicans take the Senate in November: Judicial nominations are likely to screech to a halt, writes @jbview  https://t.co/ACTdtmmuMM via @opinion</td>
+      <td>9</td>
+      <td>0.420867</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <td>“This is going to open people’s eyes in a big way,” said Rep. Adam Kinzinger said Sunday.  https://t.co/KjBp3bbyAW</td>
+      <td>9</td>
+      <td>0.375648</td>
+      <td>18</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>17</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AIM-HI Accelerator Fund Announces Lance Kawaguchi, CEO of Cure Brain Cancer Foundation, as New Strategic Advisor  https://t.co/lIvzBQLAnE  https://t.co/E6q7byO5NE</td>
+      <td>2</td>
+      <td>0.346847</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <td>$GTGEF - G2 Energy names James Tague as president of G2 Energy Holdings US  https://t.co/Nizwh3Ko67</td>
+      <td>6</td>
+      <td>0.345605</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <td>Shigenobu Nagamori is back at the top of Nidec, one of Japan’s biggest companies, and doesn’t intend to leave until he’s boosted the company’s share price to a record  https://t.co/8qyBqPIGlJ</td>
+      <td>19</td>
+      <td>0.308662</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <td>Barnes Joins the Ellen MacArthur Foundation’s Global Network  https://t.co/gEylTOBo3q  https://t.co/8m6HGVLhip</td>
+      <td>2</td>
+      <td>0.272220</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>SkyKnight Joins Novata General Partner Advisory Committee to Advance ESG in Private Markets  https://t.co/9hG2k0WlBK  https://t.co/6bUuoBk4sO</td>
+      <td>2</td>
+      <td>0.262965</td>
+      <td>15</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>18</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$GOLD - Barrick Gold: Trading At A Deep Discount To Fair Value.  https://t.co/l15uwCYorD #trading #economy #business</td>
+      <td>10</td>
+      <td>0.983095</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <td>$BTG - B2Gold: Solid Gold Production For The Second Quarter.  https://t.co/PfZrsEo87n #stocks #finance #trading</td>
+      <td>10</td>
+      <td>0.882252</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>$VLCN Last week PR: For the first 14 days the pre-orders skyrocketed ! We didn't expect such growth "Volcon Receives Thousands of Pre-Orders for its Stag in First 14 Days; $70M+ of Potential Revenue". We could see a nice bounce from current levels.</td>
+      <td>19</td>
+      <td>0.836200</td>
+      <td>43</td>
+    </tr>
+    <tr>
+      <td>@cdunwody Gold really only has one open. There is no pit trading.</td>
+      <td>10</td>
+      <td>0.824232</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <td>BOK: INFLATION WILL REMAIN HIGH FOR SOME TIME</td>
+      <td>14</td>
+      <td>0.664108</td>
+      <td>8</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>19</strong></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>text</th>
+      <th>pred_label</th>
+      <th>confidence</th>
+      <th>token_length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$NFLX Q2 Earnings  - EPS: $3.20 vs $2.96 est  - Revs: $7.97B vs $8.04B est. - Shares are up 7.28% after hours</td>
+      <td>5</td>
+      <td>0.942803</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <td>$NNDM $SSYS - Stratasys stock gains after Nano Dimension acquires 12.12% stake  https://t.co/wY4bZOq1vG</td>
+      <td>13</td>
+      <td>0.913224</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <td>$RXDX - Prometheus Biosciences gains as Goldman Sachs starts coverage with buy rating  https://t.co/4Gruo3Kp9k</td>
+      <td>0</td>
+      <td>0.764439</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <td>$TXMD - TherapeuticsMD plunges 42% as merger agreement ends  https://t.co/LcsX6qPLzS</td>
+      <td>13</td>
+      <td>0.729887</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <td>$NVDA down on lowered guidance. Q2 revenue est now $8.1B vs $8.45B</td>
+      <td>7</td>
+      <td>0.728474</td>
+      <td>12</td>
+    </tr>
+  </tbody>
+</table>
+<h4>Misclassification Patterns</h4>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>pattern</th>
+      <th>examples_with_pattern</th>
+      <th>misclassified_with_pattern</th>
+      <th>error_rate</th>
+      <th>share_of_all_errors</th>
+      <th>avg_length_correct</th>
+      <th>avg_length_wrong</th>
+      <th>median_length_correct</th>
+      <th>median_length_wrong</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>has_negation</td>
+      <td>118.0</td>
+      <td>28.0</td>
+      <td>0.237288</td>
+      <td>0.025783</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>has_sarcasm_cue</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>is_short</td>
+      <td>53.0</td>
+      <td>26.0</td>
+      <td>0.490566</td>
+      <td>0.023941</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>has_emphasis</td>
+      <td>2960.0</td>
+      <td>748.0</td>
+      <td>0.252703</td>
+      <td>0.688766</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>length_summary</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>18.451006</td>
+      <td>18.175875</td>
+      <td>16.0</td>
+      <td>15.0</td>
+    </tr>
+  </tbody>
+</table>
+</body></html>

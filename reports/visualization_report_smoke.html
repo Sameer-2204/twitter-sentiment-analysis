@@ -1,0 +1,105 @@
+<html><head><meta charset='utf-8'><title>Twitter Sentiment Analysis Visual Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.55; }
+              h1, h2, h3 { color: #263238; }
+              .meta { background: #fafafa; border: 1px solid #e0e0e0; padding: 16px; margin-bottom: 24px; }
+              .artifact { border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin: 20px 0; background: white; }
+              .artifact img { max-width: 100%; border: 1px solid #eee; margin-top: 12px; }
+              .artifact iframe { width: 100%; height: 520px; border: 1px solid #eee; margin-top: 12px; }
+              table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background: #f5f5f5; }
+              .skipped { color: #B71C1C; }
+            </style>
+            </head><body>
+            <h1>Twitter Sentiment Analysis Visual Report</h1><div class='meta'><p><strong>Dataset rows:</strong> 21107</p><p><strong>Labels:</strong> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19</p><p><strong>Loaded splits:</strong> train, valid</p><p><strong>Evaluation source:</strong> valid_csv</p><p><strong>Evaluation sample size:</strong> 0</p></div><h2>Dataset Summary</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>metric</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>rows</td>
+      <td>21107.00</td>
+    </tr>
+    <tr>
+      <td>unique_labels</td>
+      <td>20.00</td>
+    </tr>
+    <tr>
+      <td>avg_char_length</td>
+      <td>134.41</td>
+    </tr>
+    <tr>
+      <td>median_char_length</td>
+      <td>124.00</td>
+    </tr>
+    <tr>
+      <td>avg_word_count</td>
+      <td>18.32</td>
+    </tr>
+    <tr>
+      <td>median_word_count</td>
+      <td>16.00</td>
+    </tr>
+    <tr>
+      <td>avg_hashtag_count</td>
+      <td>0.29</td>
+    </tr>
+    <tr>
+      <td>avg_mention_count</td>
+      <td>0.07</td>
+    </tr>
+    <tr>
+      <td>timestamp_rows</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <td>num_splits_loaded</td>
+      <td>2.00</td>
+    </tr>
+  </tbody>
+</table><h2>Model Performance Summary</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>model</th>
+      <th>accuracy</th>
+      <th>precision_macro</th>
+      <th>precision_weighted</th>
+      <th>recall_macro</th>
+      <th>recall_weighted</th>
+      <th>f1_macro</th>
+      <th>f1_weighted</th>
+      <th>roc_auc_ovr_macro</th>
+      <th>roc_auc_ovr_weighted</th>
+      <th>cohen_kappa</th>
+      <th>log_loss</th>
+      <th>avg_prediction_time_ms</th>
+      <th>timing_sample_size</th>
+      <th>total_prediction_time_seconds</th>
+      <th>model_size_mb</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>logistic</td>
+      <td>0.7362</td>
+      <td>0.7226</td>
+      <td>0.7528</td>
+      <td>0.7540</td>
+      <td>0.7362</td>
+      <td>0.7289</td>
+      <td>0.7406</td>
+      <td>0.9730</td>
+      <td>0.9611</td>
+      <td>0.7093</td>
+      <td>1.2125</td>
+      <td>0.0795</td>
+      <td>200</td>
+      <td>0.3876</td>
+      <td>0.9386</td>
+    </tr>
+  </tbody>
+</table><h2>Dataset Overview</h2><div class='artifact'><h3>Sentiment Class Distribution</h3><p>Bar chart showing the number of tweets in each sentiment class.</p><iframe src='figures/dataset_sentiment_distribution_bar.html' loading='lazy'></iframe><img src='figures/dataset_sentiment_distribution_bar.png' alt='Sentiment Class Distribution'></div><div class='artifact'><h3>Sentiment Distribution Donut Chart</h3><p>Donut chart view of class balance across the dataset.</p><iframe src='figures/dataset_sentiment_distribution_donut.html' loading='lazy'></iframe><img src='figures/dataset_sentiment_distribution_donut.png' alt='Sentiment Distribution Donut Chart'></div><div class='artifact'><h3>Tweet Length Distribution by Sentiment</h3><p>Histogram of tweet character lengths grouped by sentiment.</p><iframe src='figures/dataset_tweet_length_distribution.html' loading='lazy'></iframe><img src='figures/dataset_tweet_length_distribution.png' alt='Tweet Length Distribution by Sentiment'></div><div class='artifact'><h3>Word Count Distribution by Sentiment</h3><p>Histogram of tweet word counts grouped by sentiment.</p><iframe src='figures/dataset_word_count_distribution.html' loading='lazy'></iframe><img src='figures/dataset_word_count_distribution.png' alt='Word Count Distribution by Sentiment'></div><div class='artifact'><h3>Dataset Statistics Summary</h3><p>Tabular summary of overall dataset statistics.</p><iframe src='figures/dataset_statistics_summary.html' loading='lazy'></iframe><img src='figures/dataset_statistics_summary.png' alt='Dataset Statistics Summary'></div></body></html>

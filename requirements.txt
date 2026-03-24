@@ -1,0 +1,50 @@
+# ============================================================
+# Twitter Sentiment Analysis — Pinned Dependencies
+# Install:  pip install -r requirements.txt
+# ============================================================
+
+# ---------- Core Data Science ----------
+numpy>=1.26.4
+pandas>=2.2.2
+scipy>=1.13.0
+
+# ---------- Machine Learning (classical) ----------
+scikit-learn>=1.4.2
+imbalanced-learn>=0.12.3
+
+# ---------- Deep Learning — TensorFlow / Keras ----------
+tensorflow>=2.16.0
+
+# ---------- Deep Learning — PyTorch / Transformers ----------
+torch>=2.2.2
+transformers>=4.40.0
+
+# ---------- NLP ----------
+nltk>=3.8.1
+textblob>=0.18.0
+spacy>=3.7.5
+contractions>=0.1.73
+demoji>=1.1.0
+vaderSentiment>=3.3.2
+gensim>=4.3.2
+
+# ---------- Visualisation ----------
+matplotlib>=3.9.0
+seaborn>=0.13.2
+plotly>=5.22.0
+wordcloud>=1.9.3
+
+# ---------- Utilities ----------
+tqdm>=4.66.4
+
+# ---------- Web / Deployment ----------
+streamlit>=1.35.0
+
+# ---------- Dev / QA ----------
+pytest>=8.2.0
+black>=24.4.2
+flake8>=7.0.0
+pre-commit>=3.7.1
+
+# ---------- Post-install ----------
+# python -m spacy download en_core_web_sm

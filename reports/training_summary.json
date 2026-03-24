@@ -1,0 +1,14 @@
+{
+  "generated_at_unix": 1773498999.301024,
+  "results": [
+    {
+      "model": "distilbert",
+      "train_acc": 0.9701589170100059,
+      "val_acc": 0.8972552829730386,
+      "val_f1": 0.8858178517860663,
+      "time_taken_seconds": 28964.471230799973,
+      "status": "success",
+      "error": null
+    }
+  ]
+}

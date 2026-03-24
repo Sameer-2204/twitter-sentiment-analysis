@@ -1,0 +1,154 @@
+<html><head><meta charset='utf-8'><title>Twitter Sentiment Analysis Visual Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.55; }
+              h1, h2, h3 { color: #263238; }
+              .meta { background: #fafafa; border: 1px solid #e0e0e0; padding: 16px; margin-bottom: 24px; }
+              .artifact { border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin: 20px 0; background: white; }
+              .artifact img { max-width: 100%; border: 1px solid #eee; margin-top: 12px; }
+              .artifact iframe { width: 100%; height: 520px; border: 1px solid #eee; margin-top: 12px; }
+              table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background: #f5f5f5; }
+              .skipped { color: #B71C1C; }
+            </style>
+            </head><body>
+            <h1>Twitter Sentiment Analysis Visual Report</h1><div class='meta'><p><strong>Dataset rows:</strong> 21107</p><p><strong>Labels:</strong> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19</p><p><strong>Loaded splits:</strong> train, valid</p><p><strong>Evaluation source:</strong> valid</p><p><strong>Evaluation sample size:</strong> 300</p></div><h2>Dataset Summary</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>metric</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>rows</td>
+      <td>21107.00</td>
+    </tr>
+    <tr>
+      <td>unique_labels</td>
+      <td>20.00</td>
+    </tr>
+    <tr>
+      <td>avg_char_length</td>
+      <td>134.41</td>
+    </tr>
+    <tr>
+      <td>median_char_length</td>
+      <td>124.00</td>
+    </tr>
+    <tr>
+      <td>avg_word_count</td>
+      <td>18.32</td>
+    </tr>
+    <tr>
+      <td>median_word_count</td>
+      <td>16.00</td>
+    </tr>
+    <tr>
+      <td>avg_hashtag_count</td>
+      <td>0.29</td>
+    </tr>
+    <tr>
+      <td>avg_mention_count</td>
+      <td>0.07</td>
+    </tr>
+    <tr>
+      <td>timestamp_rows</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <td>num_splits_loaded</td>
+      <td>2.00</td>
+    </tr>
+  </tbody>
+</table><h2>Model Performance Summary</h2><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>model</th>
+      <th>accuracy</th>
+      <th>precision_macro</th>
+      <th>recall_macro</th>
+      <th>f1_macro</th>
+      <th>avg_prediction_time_ms</th>
+      <th>model_size_mb</th>
+      <th>roc_auc_ovr_macro</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>distilbert</td>
+      <td>0.9133</td>
+      <td>0.9136</td>
+      <td>0.9048</td>
+      <td>0.9063</td>
+      <td>156.6925</td>
+      <td>511.0740</td>
+      <td>0.9931</td>
+    </tr>
+    <tr>
+      <td>bilstm</td>
+      <td>0.8533</td>
+      <td>0.9150</td>
+      <td>0.8479</td>
+      <td>0.8742</td>
+      <td>3.1569</td>
+      <td>37.6328</td>
+      <td>0.9931</td>
+    </tr>
+    <tr>
+      <td>logistic</td>
+      <td>0.8733</td>
+      <td>0.8802</td>
+      <td>0.8693</td>
+      <td>0.8710</td>
+      <td>0.2414</td>
+      <td>11.0869</td>
+      <td>0.9924</td>
+    </tr>
+    <tr>
+      <td>cnn</td>
+      <td>0.8233</td>
+      <td>0.8635</td>
+      <td>0.8138</td>
+      <td>0.8296</td>
+      <td>1.9024</td>
+      <td>37.7860</td>
+      <td>0.9786</td>
+    </tr>
+    <tr>
+      <td>lstm</td>
+      <td>0.2167</td>
+      <td>0.0114</td>
+      <td>0.0526</td>
+      <td>0.0187</td>
+      <td>2.3828</td>
+      <td>35.5985</td>
+      <td>0.4760</td>
+    </tr>
+  </tbody>
+</table><h2>Skipped Items</h2><div class='skipped'><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>name</th>
+      <th>section</th>
+      <th>reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>sentiment_trend_over_time</td>
+      <td>temporal_analysis</td>
+      <td>No timestamp column was found for temporal analysis.</td>
+    </tr>
+    <tr>
+      <td>tweet_volume_over_time</td>
+      <td>temporal_analysis</td>
+      <td>No timestamp column was found for temporal analysis.</td>
+    </tr>
+    <tr>
+      <td>sentiment_by_hour_heatmap</td>
+      <td>temporal_analysis</td>
+      <td>No timestamp column was found for hourly analysis.</td>
+    </tr>
+  </tbody>
+</table></div><h2>Dataset Overview</h2><div class='artifact'><h3>Sentiment Class Distribution</h3><p>Bar chart showing the number of tweets in each sentiment class.</p><iframe src='figures/dataset_sentiment_distribution_bar.html' loading='lazy'></iframe><img src='figures/dataset_sentiment_distribution_bar.png' alt='Sentiment Class Distribution'></div><div class='artifact'><h3>Sentiment Distribution Donut Chart</h3><p>Donut chart view of class balance across the dataset.</p><iframe src='figures/dataset_sentiment_distribution_donut.html' loading='lazy'></iframe><img src='figures/dataset_sentiment_distribution_donut.png' alt='Sentiment Distribution Donut Chart'></div><div class='artifact'><h3>Tweet Length Distribution by Sentiment</h3><p>Histogram of tweet character lengths grouped by sentiment.</p><iframe src='figures/dataset_tweet_length_distribution.html' loading='lazy'></iframe><img src='figures/dataset_tweet_length_distribution.png' alt='Tweet Length Distribution by Sentiment'></div><div class='artifact'><h3>Word Count Distribution by Sentiment</h3><p>Histogram of tweet word counts grouped by sentiment.</p><iframe src='figures/dataset_word_count_distribution.html' loading='lazy'></iframe><img src='figures/dataset_word_count_distribution.png' alt='Word Count Distribution by Sentiment'></div><div class='artifact'><h3>Dataset Statistics Summary</h3><p>Tabular summary of overall dataset statistics.</p><iframe src='figures/dataset_statistics_summary.html' loading='lazy'></iframe><img src='figures/dataset_statistics_summary.png' alt='Dataset Statistics Summary'></div><h2>Text Analysis</h2><div class='artifact'><h3>Word Cloud - 0</h3><p>Most prominent words for label 0.</p><iframe src='figures/wordcloud_0.html' loading='lazy'></iframe><img src='figures/wordcloud_0.png' alt='Word Cloud - 0'></div><div class='artifact'><h3>Top 20 Words - 0</h3><p>Most frequent unigrams for label 0.</p><iframe src='figures/top_words_0.html' loading='lazy'></iframe><img src='figures/top_words_0.png' alt='Top 20 Words - 0'></div><div class='artifact'><h3>Top 20 Bigrams - 0</h3><p>Most frequent bigrams for label 0.</p><iframe src='figures/top_bigrams_0.html' loading='lazy'></iframe><img src='figures/top_bigrams_0.png' alt='Top 20 Bigrams - 0'></div><div class='artifact'><h3>Top 20 Trigrams - 0</h3><p>Most frequent trigrams for label 0.</p><iframe src='figures/top_trigrams_0.html' loading='lazy'></iframe><img src='figures/top_trigrams_0.png' alt='Top 20 Trigrams - 0'></div><div class='artifact'><h3>Word Cloud - 1</h3><p>Most prominent words for label 1.</p><iframe src='figures/wordcloud_1.html' loading='lazy'></iframe><img src='figures/wordcloud_1.png' alt='Word Cloud - 1'></div><div class='artifact'><h3>Top 20 Words - 1</h3><p>Most frequent unigrams for label 1.</p><iframe src='figures/top_words_1.html' loading='lazy'></iframe><img src='figures/top_words_1.png' alt='Top 20 Words - 1'></div><div class='artifact'><h3>Top 20 Bigrams - 1</h3><p>Most frequent bigrams for label 1.</p><iframe src='figures/top_bigrams_1.html' loading='lazy'></iframe><img src='figures/top_bigrams_1.png' alt='Top 20 Bigrams - 1'></div><div class='artifact'><h3>Top 20 Trigrams - 1</h3><p>Most frequent trigrams for label 1.</p><iframe src='figures/top_trigrams_1.html' loading='lazy'></iframe><img src='figures/top_trigrams_1.png' alt='Top 20 Trigrams - 1'></div><div class='artifact'><h3>Word Cloud - 2</h3><p>Most prominent words for label 2.</p><iframe src='figures/wordcloud_2.html' loading='lazy'></iframe><img src='figures/wordcloud_2.png' alt='Word Cloud - 2'></div><div class='artifact'><h3>Top 20 Words - 2</h3><p>Most frequent unigrams for label 2.</p><iframe src='figures/top_words_2.html' loading='lazy'></iframe><img src='figures/top_words_2.png' alt='Top 20 Words - 2'></div><div class='artifact'><h3>Top 20 Bigrams - 2</h3><p>Most frequent bigrams for label 2.</p><iframe src='figures/top_bigrams_2.html' loading='lazy'></iframe><img src='figures/top_bigrams_2.png' alt='Top 20 Bigrams - 2'></div><div class='artifact'><h3>Top 20 Trigrams - 2</h3><p>Most frequent trigrams for label 2.</p><iframe src='figures/top_trigrams_2.html' loading='lazy'></iframe><img src='figures/top_trigrams_2.png' alt='Top 20 Trigrams - 2'></div><div class='artifact'><h3>Word Cloud - 3</h3><p>Most prominent words for label 3.</p><iframe src='figures/wordcloud_3.html' loading='lazy'></iframe><img src='figures/wordcloud_3.png' alt='Word Cloud - 3'></div><div class='artifact'><h3>Top 20 Words - 3</h3><p>Most frequent unigrams for label 3.</p><iframe src='figures/top_words_3.html' loading='lazy'></iframe><img src='figures/top_words_3.png' alt='Top 20 Words - 3'></div><div class='artifact'><h3>Top 20 Bigrams - 3</h3><p>Most frequent bigrams for label 3.</p><iframe src='figures/top_bigrams_3.html' loading='lazy'></iframe><img src='figures/top_bigrams_3.png' alt='Top 20 Bigrams - 3'></div><div class='artifact'><h3>Top 20 Trigrams - 3</h3><p>Most frequent trigrams for label 3.</p><iframe src='figures/top_trigrams_3.html' loading='lazy'></iframe><img src='figures/top_trigrams_3.png' alt='Top 20 Trigrams - 3'></div><div class='artifact'><h3>Word Cloud - 4</h3><p>Most prominent words for label 4.</p><iframe src='figures/wordcloud_4.html' loading='lazy'></iframe><img src='figures/wordcloud_4.png' alt='Word Cloud - 4'></div><div class='artifact'><h3>Top 20 Words - 4</h3><p>Most frequent unigrams for label 4.</p><iframe src='figures/top_words_4.html' loading='lazy'></iframe><img src='figures/top_words_4.png' alt='Top 20 Words - 4'></div><div class='artifact'><h3>Top 20 Bigrams - 4</h3><p>Most frequent bigrams for label 4.</p><iframe src='figures/top_bigrams_4.html' loading='lazy'></iframe><img src='figures/top_bigrams_4.png' alt='Top 20 Bigrams - 4'></div><div class='artifact'><h3>Top 20 Trigrams - 4</h3><p>Most frequent trigrams for label 4.</p><iframe src='figures/top_trigrams_4.html' loading='lazy'></iframe><img src='figures/top_trigrams_4.png' alt='Top 20 Trigrams - 4'></div><div class='artifact'><h3>Word Cloud - 5</h3><p>Most prominent words for label 5.</p><iframe src='figures/wordcloud_5.html' loading='lazy'></iframe><img src='figures/wordcloud_5.png' alt='Word Cloud - 5'></div><div class='artifact'><h3>Top 20 Words - 5</h3><p>Most frequent unigrams for label 5.</p><iframe src='figures/top_words_5.html' loading='lazy'></iframe><img src='figures/top_words_5.png' alt='Top 20 Words - 5'></div><div class='artifact'><h3>Top 20 Bigrams - 5</h3><p>Most frequent bigrams for label 5.</p><iframe src='figures/top_bigrams_5.html' loading='lazy'></iframe><img src='figures/top_bigrams_5.png' alt='Top 20 Bigrams - 5'></div><div class='artifact'><h3>Top 20 Trigrams - 5</h3><p>Most frequent trigrams for label 5.</p><iframe src='figures/top_trigrams_5.html' loading='lazy'></iframe><img src='figures/top_trigrams_5.png' alt='Top 20 Trigrams - 5'></div><div class='artifact'><h3>Word Cloud - 6</h3><p>Most prominent words for label 6.</p><iframe src='figures/wordcloud_6.html' loading='lazy'></iframe><img src='figures/wordcloud_6.png' alt='Word Cloud - 6'></div><div class='artifact'><h3>Top 20 Words - 6</h3><p>Most frequent unigrams for label 6.</p><iframe src='figures/top_words_6.html' loading='lazy'></iframe><img src='figures/top_words_6.png' alt='Top 20 Words - 6'></div><div class='artifact'><h3>Top 20 Bigrams - 6</h3><p>Most frequent bigrams for label 6.</p><iframe src='figures/top_bigrams_6.html' loading='lazy'></iframe><img src='figures/top_bigrams_6.png' alt='Top 20 Bigrams - 6'></div><div class='artifact'><h3>Top 20 Trigrams - 6</h3><p>Most frequent trigrams for label 6.</p><iframe src='figures/top_trigrams_6.html' loading='lazy'></iframe><img src='figures/top_trigrams_6.png' alt='Top 20 Trigrams - 6'></div><div class='artifact'><h3>Word Cloud - 7</h3><p>Most prominent words for label 7.</p><iframe src='figures/wordcloud_7.html' loading='lazy'></iframe><img src='figures/wordcloud_7.png' alt='Word Cloud - 7'></div><div class='artifact'><h3>Top 20 Words - 7</h3><p>Most frequent unigrams for label 7.</p><iframe src='figures/top_words_7.html' loading='lazy'></iframe><img src='figures/top_words_7.png' alt='Top 20 Words - 7'></div><div class='artifact'><h3>Top 20 Bigrams - 7</h3><p>Most frequent bigrams for label 7.</p><iframe src='figures/top_bigrams_7.html' loading='lazy'></iframe><img src='figures/top_bigrams_7.png' alt='Top 20 Bigrams - 7'></div><div class='artifact'><h3>Top 20 Trigrams - 7</h3><p>Most frequent trigrams for label 7.</p><iframe src='figures/top_trigrams_7.html' loading='lazy'></iframe><img src='figures/top_trigrams_7.png' alt='Top 20 Trigrams - 7'></div><div class='artifact'><h3>Word Cloud - 8</h3><p>Most prominent words for label 8.</p><iframe src='figures/wordcloud_8.html' loading='lazy'></iframe><img src='figures/wordcloud_8.png' alt='Word Cloud - 8'></div><div class='artifact'><h3>Top 20 Words - 8</h3><p>Most frequent unigrams for label 8.</p><iframe src='figures/top_words_8.html' loading='lazy'></iframe><img src='figures/top_words_8.png' alt='Top 20 Words - 8'></div><div class='artifact'><h3>Top 20 Bigrams - 8</h3><p>Most frequent bigrams for label 8.</p><iframe src='figures/top_bigrams_8.html' loading='lazy'></iframe><img src='figures/top_bigrams_8.png' alt='Top 20 Bigrams - 8'></div><div class='artifact'><h3>Top 20 Trigrams - 8</h3><p>Most frequent trigrams for label 8.</p><iframe src='figures/top_trigrams_8.html' loading='lazy'></iframe><img src='figures/top_trigrams_8.png' alt='Top 20 Trigrams - 8'></div><div class='artifact'><h3>Word Cloud - 9</h3><p>Most prominent words for label 9.</p><iframe src='figures/wordcloud_9.html' loading='lazy'></iframe><img src='figures/wordcloud_9.png' alt='Word Cloud - 9'></div><div class='artifact'><h3>Top 20 Words - 9</h3><p>Most frequent unigrams for label 9.</p><iframe src='figures/top_words_9.html' loading='lazy'></iframe><img src='figures/top_words_9.png' alt='Top 20 Words - 9'></div><div class='artifact'><h3>Top 20 Bigrams - 9</h3><p>Most frequent bigrams for label 9.</p><iframe src='figures/top_bigrams_9.html' loading='lazy'></iframe><img src='figures/top_bigrams_9.png' alt='Top 20 Bigrams - 9'></div><div class='artifact'><h3>Top 20 Trigrams - 9</h3><p>Most frequent trigrams for label 9.</p><iframe src='figures/top_trigrams_9.html' loading='lazy'></iframe><img src='figures/top_trigrams_9.png' alt='Top 20 Trigrams - 9'></div><div class='artifact'><h3>Word Cloud - 10</h3><p>Most prominent words for label 10.</p><iframe src='figures/wordcloud_10.html' loading='lazy'></iframe><img src='figures/wordcloud_10.png' alt='Word Cloud - 10'></div><div class='artifact'><h3>Top 20 Words - 10</h3><p>Most frequent unigrams for label 10.</p><iframe src='figures/top_words_10.html' loading='lazy'></iframe><img src='figures/top_words_10.png' alt='Top 20 Words - 10'></div><div class='artifact'><h3>Top 20 Bigrams - 10</h3><p>Most frequent bigrams for label 10.</p><iframe src='figures/top_bigrams_10.html' loading='lazy'></iframe><img src='figures/top_bigrams_10.png' alt='Top 20 Bigrams - 10'></div><div class='artifact'><h3>Top 20 Trigrams - 10</h3><p>Most frequent trigrams for label 10.</p><iframe src='figures/top_trigrams_10.html' loading='lazy'></iframe><img src='figures/top_trigrams_10.png' alt='Top 20 Trigrams - 10'></div><div class='artifact'><h3>Word Cloud - 11</h3><p>Most prominent words for label 11.</p><iframe src='figures/wordcloud_11.html' loading='lazy'></iframe><img src='figures/wordcloud_11.png' alt='Word Cloud - 11'></div><div class='artifact'><h3>Top 20 Words - 11</h3><p>Most frequent unigrams for label 11.</p><iframe src='figures/top_words_11.html' loading='lazy'></iframe><img src='figures/top_words_11.png' alt='Top 20 Words - 11'></div><div class='artifact'><h3>Top 20 Bigrams - 11</h3><p>Most frequent bigrams for label 11.</p><iframe src='figures/top_bigrams_11.html' loading='lazy'></iframe><img src='figures/top_bigrams_11.png' alt='Top 20 Bigrams - 11'></div><div class='artifact'><h3>Top 20 Trigrams - 11</h3><p>Most frequent trigrams for label 11.</p><iframe src='figures/top_trigrams_11.html' loading='lazy'></iframe><img src='figures/top_trigrams_11.png' alt='Top 20 Trigrams - 11'></div><div class='artifact'><h3>Word Cloud - 12</h3><p>Most prominent words for label 12.</p><iframe src='figures/wordcloud_12.html' loading='lazy'></iframe><img src='figures/wordcloud_12.png' alt='Word Cloud - 12'></div><div class='artifact'><h3>Top 20 Words - 12</h3><p>Most frequent unigrams for label 12.</p><iframe src='figures/top_words_12.html' loading='lazy'></iframe><img src='figures/top_words_12.png' alt='Top 20 Words - 12'></div><div class='artifact'><h3>Top 20 Bigrams - 12</h3><p>Most frequent bigrams for label 12.</p><iframe src='figures/top_bigrams_12.html' loading='lazy'></iframe><img src='figures/top_bigrams_12.png' alt='Top 20 Bigrams - 12'></div><div class='artifact'><h3>Top 20 Trigrams - 12</h3><p>Most frequent trigrams for label 12.</p><iframe src='figures/top_trigrams_12.html' loading='lazy'></iframe><img src='figures/top_trigrams_12.png' alt='Top 20 Trigrams - 12'></div><div class='artifact'><h3>Word Cloud - 13</h3><p>Most prominent words for label 13.</p><iframe src='figures/wordcloud_13.html' loading='lazy'></iframe><img src='figures/wordcloud_13.png' alt='Word Cloud - 13'></div><div class='artifact'><h3>Top 20 Words - 13</h3><p>Most frequent unigrams for label 13.</p><iframe src='figures/top_words_13.html' loading='lazy'></iframe><img src='figures/top_words_13.png' alt='Top 20 Words - 13'></div><div class='artifact'><h3>Top 20 Bigrams - 13</h3><p>Most frequent bigrams for label 13.</p><iframe src='figures/top_bigrams_13.html' loading='lazy'></iframe><img src='figures/top_bigrams_13.png' alt='Top 20 Bigrams - 13'></div><div class='artifact'><h3>Top 20 Trigrams - 13</h3><p>Most frequent trigrams for label 13.</p><iframe src='figures/top_trigrams_13.html' loading='lazy'></iframe><img src='figures/top_trigrams_13.png' alt='Top 20 Trigrams - 13'></div><div class='artifact'><h3>Word Cloud - 14</h3><p>Most prominent words for label 14.</p><iframe src='figures/wordcloud_14.html' loading='lazy'></iframe><img src='figures/wordcloud_14.png' alt='Word Cloud - 14'></div><div class='artifact'><h3>Top 20 Words - 14</h3><p>Most frequent unigrams for label 14.</p><iframe src='figures/top_words_14.html' loading='lazy'></iframe><img src='figures/top_words_14.png' alt='Top 20 Words - 14'></div><div class='artifact'><h3>Top 20 Bigrams - 14</h3><p>Most frequent bigrams for label 14.</p><iframe src='figures/top_bigrams_14.html' loading='lazy'></iframe><img src='figures/top_bigrams_14.png' alt='Top 20 Bigrams - 14'></div><div class='artifact'><h3>Top 20 Trigrams - 14</h3><p>Most frequent trigrams for label 14.</p><iframe src='figures/top_trigrams_14.html' loading='lazy'></iframe><img src='figures/top_trigrams_14.png' alt='Top 20 Trigrams - 14'></div><div class='artifact'><h3>Word Cloud - 15</h3><p>Most prominent words for label 15.</p><iframe src='figures/wordcloud_15.html' loading='lazy'></iframe><img src='figures/wordcloud_15.png' alt='Word Cloud - 15'></div><div class='artifact'><h3>Top 20 Words - 15</h3><p>Most frequent unigrams for label 15.</p><iframe src='figures/top_words_15.html' loading='lazy'></iframe><img src='figures/top_words_15.png' alt='Top 20 Words - 15'></div><div class='artifact'><h3>Top 20 Bigrams - 15</h3><p>Most frequent bigrams for label 15.</p><iframe src='figures/top_bigrams_15.html' loading='lazy'></iframe><img src='figures/top_bigrams_15.png' alt='Top 20 Bigrams - 15'></div><div class='artifact'><h3>Top 20 Trigrams - 15</h3><p>Most frequent trigrams for label 15.</p><iframe src='figures/top_trigrams_15.html' loading='lazy'></iframe><img src='figures/top_trigrams_15.png' alt='Top 20 Trigrams - 15'></div><div class='artifact'><h3>Word Cloud - 16</h3><p>Most prominent words for label 16.</p><iframe src='figures/wordcloud_16.html' loading='lazy'></iframe><img src='figures/wordcloud_16.png' alt='Word Cloud - 16'></div><div class='artifact'><h3>Top 20 Words - 16</h3><p>Most frequent unigrams for label 16.</p><iframe src='figures/top_words_16.html' loading='lazy'></iframe><img src='figures/top_words_16.png' alt='Top 20 Words - 16'></div><div class='artifact'><h3>Top 20 Bigrams - 16</h3><p>Most frequent bigrams for label 16.</p><iframe src='figures/top_bigrams_16.html' loading='lazy'></iframe><img src='figures/top_bigrams_16.png' alt='Top 20 Bigrams - 16'></div><div class='artifact'><h3>Top 20 Trigrams - 16</h3><p>Most frequent trigrams for label 16.</p><iframe src='figures/top_trigrams_16.html' loading='lazy'></iframe><img src='figures/top_trigrams_16.png' alt='Top 20 Trigrams - 16'></div><div class='artifact'><h3>Word Cloud - 17</h3><p>Most prominent words for label 17.</p><iframe src='figures/wordcloud_17.html' loading='lazy'></iframe><img src='figures/wordcloud_17.png' alt='Word Cloud - 17'></div><div class='artifact'><h3>Top 20 Words - 17</h3><p>Most frequent unigrams for label 17.</p><iframe src='figures/top_words_17.html' loading='lazy'></iframe><img src='figures/top_words_17.png' alt='Top 20 Words - 17'></div><div class='artifact'><h3>Top 20 Bigrams - 17</h3><p>Most frequent bigrams for label 17.</p><iframe src='figures/top_bigrams_17.html' loading='lazy'></iframe><img src='figures/top_bigrams_17.png' alt='Top 20 Bigrams - 17'></div><div class='artifact'><h3>Top 20 Trigrams - 17</h3><p>Most frequent trigrams for label 17.</p><iframe src='figures/top_trigrams_17.html' loading='lazy'></iframe><img src='figures/top_trigrams_17.png' alt='Top 20 Trigrams - 17'></div><div class='artifact'><h3>Word Cloud - 18</h3><p>Most prominent words for label 18.</p><iframe src='figures/wordcloud_18.html' loading='lazy'></iframe><img src='figures/wordcloud_18.png' alt='Word Cloud - 18'></div><div class='artifact'><h3>Top 20 Words - 18</h3><p>Most frequent unigrams for label 18.</p><iframe src='figures/top_words_18.html' loading='lazy'></iframe><img src='figures/top_words_18.png' alt='Top 20 Words - 18'></div><div class='artifact'><h3>Top 20 Bigrams - 18</h3><p>Most frequent bigrams for label 18.</p><iframe src='figures/top_bigrams_18.html' loading='lazy'></iframe><img src='figures/top_bigrams_18.png' alt='Top 20 Bigrams - 18'></div><div class='artifact'><h3>Top 20 Trigrams - 18</h3><p>Most frequent trigrams for label 18.</p><iframe src='figures/top_trigrams_18.html' loading='lazy'></iframe><img src='figures/top_trigrams_18.png' alt='Top 20 Trigrams - 18'></div><div class='artifact'><h3>Word Cloud - 19</h3><p>Most prominent words for label 19.</p><iframe src='figures/wordcloud_19.html' loading='lazy'></iframe><img src='figures/wordcloud_19.png' alt='Word Cloud - 19'></div><div class='artifact'><h3>Top 20 Words - 19</h3><p>Most frequent unigrams for label 19.</p><iframe src='figures/top_words_19.html' loading='lazy'></iframe><img src='figures/top_words_19.png' alt='Top 20 Words - 19'></div><div class='artifact'><h3>Top 20 Bigrams - 19</h3><p>Most frequent bigrams for label 19.</p><iframe src='figures/top_bigrams_19.html' loading='lazy'></iframe><img src='figures/top_bigrams_19.png' alt='Top 20 Bigrams - 19'></div><div class='artifact'><h3>Top 20 Trigrams - 19</h3><p>Most frequent trigrams for label 19.</p><iframe src='figures/top_trigrams_19.html' loading='lazy'></iframe><img src='figures/top_trigrams_19.png' alt='Top 20 Trigrams - 19'></div><div class='artifact'><h3>Most Common Hashtags</h3><p>Top hashtags across the dataset.</p><iframe src='figures/common_hashtags.html' loading='lazy'></iframe><img src='figures/common_hashtags.png' alt='Most Common Hashtags'></div><div class='artifact'><h3>Most Common Mentions</h3><p>Top mentions across the dataset.</p><iframe src='figures/common_mentions.html' loading='lazy'></iframe><img src='figures/common_mentions.png' alt='Most Common Mentions'></div><h2>Temporal Analysis</h2><div class='artifact'><h3>Sentiment Trend Over Time</h3><p>No timestamp column was found for temporal analysis.</p><p><em>No timestamp column was found for temporal analysis.</em></p><p class='skipped'>Skipped.</p></div><div class='artifact'><h3>Tweet Volume Over Time</h3><p>No timestamp column was found for temporal analysis.</p><p><em>No timestamp column was found for temporal analysis.</em></p><p class='skipped'>Skipped.</p></div><div class='artifact'><h3>Sentiment By Hour Heatmap</h3><p>No timestamp column was found for hourly analysis.</p><p><em>No timestamp column was found for hourly analysis.</em></p><p class='skipped'>Skipped.</p></div><h2>Advanced Analysis</h2><div class='artifact'><h3>t-SNE Projection of Tweet Embeddings</h3><p>Two-dimensional embedding projection of tweets colored by sentiment.</p><p><em>UMAP not installed; used t-SNE instead.</em></p><iframe src='figures/tweet_embedding_projection.html' loading='lazy'></iframe><img src='figures/tweet_embedding_projection.png' alt='t-SNE Projection of Tweet Embeddings'></div><div class='artifact'><h3>Correlation Heatmap of Numerical Features</h3><p>Correlations between engineered numeric tweet features.</p><iframe src='figures/correlation_heatmap.html' loading='lazy'></iframe><img src='figures/correlation_heatmap.png' alt='Correlation Heatmap of Numerical Features'></div><div class='artifact'><h3>VADER Compound Score by Actual Sentiment</h3><p>Distribution of VADER compound scores across labels.</p><iframe src='figures/vader_boxplot.html' loading='lazy'></iframe><img src='figures/vader_boxplot.png' alt='VADER Compound Score by Actual Sentiment'></div><div class='artifact'><h3>Distribution of Prediction Confidence Scores</h3><p>Confidence score distribution across available trained models.</p><p><em>Computed on 300 evaluation rows from valid.</em></p><iframe src='figures/prediction_confidence_distribution.html' loading='lazy'></iframe><img src='figures/prediction_confidence_distribution.png' alt='Distribution of Prediction Confidence Scores'></div><h2>Model Performance</h2><div class='artifact'><h3>LOGISTIC Confusion Matrix</h3><p>Confusion matrix heatmap for the logistic model.</p><p><em>Computed on 300 evaluation rows.</em></p><iframe src='figures/logistic_confusion_matrix_heatmap.html' loading='lazy'></iframe><img src='figures/logistic_confusion_matrix_heatmap.png' alt='LOGISTIC Confusion Matrix'></div><div class='artifact'><h3>LSTM Confusion Matrix</h3><p>Confusion matrix heatmap for the lstm model.</p><p><em>Computed on 300 evaluation rows.</em></p><iframe src='figures/lstm_confusion_matrix_heatmap.html' loading='lazy'></iframe><img src='figures/lstm_confusion_matrix_heatmap.png' alt='LSTM Confusion Matrix'></div><div class='artifact'><h3>BILSTM Confusion Matrix</h3><p>Confusion matrix heatmap for the bilstm model.</p><p><em>Computed on 300 evaluation rows.</em></p><iframe src='figures/bilstm_confusion_matrix_heatmap.html' loading='lazy'></iframe><img src='figures/bilstm_confusion_matrix_heatmap.png' alt='BILSTM Confusion Matrix'></div><div class='artifact'><h3>CNN Confusion Matrix</h3><p>Confusion matrix heatmap for the cnn model.</p><p><em>Computed on 300 evaluation rows.</em></p><iframe src='figures/cnn_confusion_matrix_heatmap.html' loading='lazy'></iframe><img src='figures/cnn_confusion_matrix_heatmap.png' alt='CNN Confusion Matrix'></div><div class='artifact'><h3>DISTILBERT Confusion Matrix</h3><p>Confusion matrix heatmap for the distilbert model.</p><p><em>Computed on 300 evaluation rows.</em></p><iframe src='figures/distilbert_confusion_matrix_heatmap.html' loading='lazy'></iframe><img src='figures/distilbert_confusion_matrix_heatmap.png' alt='DISTILBERT Confusion Matrix'></div><div class='artifact'><h3>ROC Curves Across Models</h3><p>Micro-averaged one-vs-rest ROC curves for all available models.</p><p><em>Computed on 300 evaluation rows.</em></p><iframe src='figures/all_models_roc_curves.html' loading='lazy'></iframe><img src='figures/all_models_roc_curves.png' alt='ROC Curves Across Models'></div><div class='artifact'><h3>Training Curves for Deep Learning Models</h3><p>Loss and accuracy trends across saved deep-learning model histories.</p><iframe src='figures/deep_learning_training_curves.html' loading='lazy'></iframe><img src='figures/deep_learning_training_curves.png' alt='Training Curves for Deep Learning Models'></div><div class='artifact'><h3>Model Comparison Radar Chart</h3><p>Normalized comparison across accuracy, F1, precision, recall, and speed.</p><iframe src='figures/model_comparison_radar.html' loading='lazy'></iframe><img src='figures/model_comparison_radar.png' alt='Model Comparison Radar Chart'></div><div class='artifact'><h3>Macro F1 Score Comparison Across Models</h3><p>Bar chart comparing macro F1 scores across trained models.</p><iframe src='figures/model_f1_comparison.html' loading='lazy'></iframe><img src='figures/model_f1_comparison.png' alt='Macro F1 Score Comparison Across Models'></div></body></html>

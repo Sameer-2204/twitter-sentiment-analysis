@@ -1,0 +1,1603 @@
+{
+  "generated_at_unix": 1773577653.7071002,
+  "dataset": {
+    "rows": 21107,
+    "labels": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "label_names": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19"
+    ],
+    "splits": [
+      "train",
+      "valid"
+    ],
+    "has_timestamps": false,
+    "summary_table": [
+      {
+        "metric": "rows",
+        "value": 21107.0
+      },
+      {
+        "metric": "unique_labels",
+        "value": 20.0
+      },
+      {
+        "metric": "avg_char_length",
+        "value": 134.41
+      },
+      {
+        "metric": "median_char_length",
+        "value": 124.0
+      },
+      {
+        "metric": "avg_word_count",
+        "value": 18.32
+      },
+      {
+        "metric": "median_word_count",
+        "value": 16.0
+      },
+      {
+        "metric": "avg_hashtag_count",
+        "value": 0.29
+      },
+      {
+        "metric": "avg_mention_count",
+        "value": 0.07
+      },
+      {
+        "metric": "timestamp_rows",
+        "value": 0.0
+      },
+      {
+        "metric": "num_splits_loaded",
+        "value": 2.0
+      }
+    ]
+  },
+  "evaluation": {
+    "source": "valid_csv",
+    "sample_size": 0
+  },
+  "available_models": [
+    "logistic",
+    "lstm",
+    "bilstm",
+    "cnn",
+    "distilbert"
+  ],
+  "artifacts": [
+    {
+      "name": "dataset_sentiment_distribution_bar",
+      "title": "Sentiment Class Distribution",
+      "section": "dataset_overview",
+      "png_path": "figures/dataset_sentiment_distribution_bar.png",
+      "html_path": "figures/dataset_sentiment_distribution_bar.html",
+      "description": "Bar chart showing the number of tweets in each sentiment class.",
+      "status": "generated",
+      "notes": null
+    },
+    {
+      "name": "dataset_sentiment_distribution_donut",
+      "title": "Sentiment Distribution Donut Chart",
+      "section": "dataset_overview",
+      "png_path": "figures/dataset_sentiment_distribution_donut.png",
+      "html_path": "figures/dataset_sentiment_distribution_donut.html",
+      "description": "Donut chart view of class balance across the dataset.",
+      "status": "generated",
+      "notes": null
+    },
+    {
+      "name": "dataset_tweet_length_distribution",
+      "title": "Tweet Length Distribution by Sentiment",
+      "section": "dataset_overview",
+      "png_path": "figures/dataset_tweet_length_distribution.png",
+      "html_path": "figures/dataset_tweet_length_distribution.html",
+      "description": "Histogram of tweet character lengths grouped by sentiment.",
+      "status": "generated",
+      "notes": null
+    },
+    {
+      "name": "dataset_word_count_distribution",
+      "title": "Word Count Distribution by Sentiment",
+      "section": "dataset_overview",
+      "png_path": "figures/dataset_word_count_distribution.png",
+      "html_path": "figures/dataset_word_count_distribution.html",
+      "description": "Histogram of tweet word counts grouped by sentiment.",
+      "status": "generated",
+      "notes": null
+    },
+    {
+      "name": "dataset_statistics_summary",
+      "title": "Dataset Statistics Summary",
+      "section": "dataset_overview",
+      "png_path": "figures/dataset_statistics_summary.png",
+      "html_path": "figures/dataset_statistics_summary.html",
+      "description": "Tabular summary of overall dataset statistics.",
+      "status": "generated",
+      "notes": null
+    }
+  ],
+  "skipped_items": [],
+  "performance_summary": [
+    {
+      "model": "logistic",
+      "accuracy": 0.736215691037163,
+      "precision_macro": 0.7226122182337107,
+      "precision_weighted": 0.7528152720266177,
+      "recall_macro": 0.7539776451112492,
+      "recall_weighted": 0.736215691037163,
+      "f1_macro": 0.728925821804891,
+      "f1_weighted": 0.74061204149792,
+      "roc_auc_ovr_macro": 0.9730070516498005,
+      "roc_auc_ovr_weighted": 0.9610557935209187,
+      "cohen_kappa": 0.7093425915957943,
+      "log_loss": 1.2125093684125647,
+      "avg_prediction_time_ms": 0.0794879999011755,
+      "timing_sample_size": 200,
+      "total_prediction_time_seconds": 0.38756510004168376,
+      "model_size_mb": 0.9385948181152344
+    }
+  ],
+  "training_summary": {
+    "generated_at_unix": 1773498999.301024,
+    "results": [
+      {
+        "model": "distilbert",
+        "train_acc": 0.9701589170100059,
+        "val_acc": 0.8972552829730386,
+        "val_f1": 0.8858178517860663,
+        "time_taken_seconds": 28964.471230799973,
+        "status": "success",
+        "error": null
+      }
+    ]
+  },
+  "existing_model_report": {
+    "evaluation_split": "valid_csv",
+    "comparison": [
+      {
+        "model": "logistic",
+        "accuracy": 0.736215691037163,
+        "precision_macro": 0.7226122182337107,
+        "precision_weighted": 0.7528152720266177,
+        "recall_macro": 0.7539776451112492,
+        "recall_weighted": 0.736215691037163,
+        "f1_macro": 0.728925821804891,
+        "f1_weighted": 0.74061204149792,
+        "roc_auc_ovr_macro": 0.9730070516498005,
+        "roc_auc_ovr_weighted": 0.9610557935209187,
+        "cohen_kappa": 0.7093425915957943,
+        "log_loss": 1.2125093684125647,
+        "avg_prediction_time_ms": 0.0794879999011755,
+        "timing_sample_size": 200,
+        "total_prediction_time_seconds": 0.38756510004168376,
+        "model_size_mb": 0.9385948181152344
+      }
+    ],
+    "significance_test": null,
+    "failures": [],
+    "per_model": {
+      "logistic": {
+        "summary": {
+          "model": "logistic",
+          "accuracy": 0.736215691037163,
+          "precision_macro": 0.7226122182337107,
+          "precision_weighted": 0.7528152720266177,
+          "recall_macro": 0.7539776451112492,
+          "recall_weighted": 0.736215691037163,
+          "f1_macro": 0.728925821804891,
+          "f1_weighted": 0.74061204149792,
+          "roc_auc_ovr_macro": 0.9730070516498005,
+          "roc_auc_ovr_weighted": 0.9610557935209187,
+          "cohen_kappa": 0.7093425915957943,
+          "log_loss": 1.2125093684125647,
+          "avg_prediction_time_ms": 0.0794879999011755,
+          "timing_sample_size": 200,
+          "total_prediction_time_seconds": 0.38756510004168376,
+          "model_size_mb": 0.9385948181152344
+        },
+        "metrics": {
+          "accuracy": 0.736215691037163,
+          "precision_macro": 0.7226122182337107,
+          "precision_weighted": 0.7528152720266177,
+          "recall_macro": 0.7539776451112492,
+          "recall_weighted": 0.736215691037163,
+          "f1_macro": 0.728925821804891,
+          "f1_weighted": 0.74061204149792,
+          "cohen_kappa": 0.7093425915957943,
+          "log_loss": 1.2125093684125647,
+          "roc_auc_ovr_macro": 0.9730070516498005,
+          "roc_auc_ovr_weighted": 0.9610557935209187,
+          "classification_report": {
+            "0": {
+              "precision": 0.6578947368421053,
+              "recall": 0.684931506849315,
+              "f1-score": 0.6711409395973155,
+              "support": 73.0
+            },
+            "1": {
+              "precision": 0.7867298578199052,
+              "recall": 0.7757009345794392,
+              "f1-score": 0.7811764705882352,
+              "support": 214.0
+            },
+            "2": {
+              "precision": 0.7674418604651163,
+              "recall": 0.7359154929577465,
+              "f1-score": 0.7513481126423007,
+              "support": 852.0
+            },
+            "3": {
+              "precision": 0.7966101694915254,
+              "recall": 0.6103896103896104,
+              "f1-score": 0.6911764705882353,
+              "support": 77.0
+            },
+            "4": {
+              "precision": 0.9134615384615384,
+              "recall": 0.979381443298969,
+              "f1-score": 0.945273631840796,
+              "support": 97.0
+            },
+            "5": {
+              "precision": 0.9213973799126638,
+              "recall": 0.871900826446281,
+              "f1-score": 0.8959660297239915,
+              "support": 242.0
+            },
+            "6": {
+              "precision": 0.6737967914438503,
+              "recall": 0.863013698630137,
+              "f1-score": 0.7567567567567568,
+              "support": 146.0
+            },
+            "7": {
+              "precision": 0.841726618705036,
+              "recall": 0.73125,
+              "f1-score": 0.782608695652174,
+              "support": 160.0
+            },
+            "8": {
+              "precision": 0.5,
+              "recall": 0.78125,
+              "f1-score": 0.6097560975609756,
+              "support": 32.0
+            },
+            "9": {
+              "precision": 0.6133333333333333,
+              "recall": 0.6845238095238095,
+              "f1-score": 0.6469760900140648,
+              "support": 336.0
+            },
+            "10": {
+              "precision": 0.32142857142857145,
+              "recall": 0.6923076923076923,
+              "f1-score": 0.43902439024390244,
+              "support": 13.0
+            },
+            "11": {
+              "precision": 0.8235294117647058,
+              "recall": 1.0,
+              "f1-score": 0.9032258064516129,
+              "support": 14.0
+            },
+            "12": {
+              "precision": 0.7899159663865546,
+              "recall": 0.7899159663865546,
+              "f1-score": 0.7899159663865546,
+              "support": 119.0
+            },
+            "13": {
+              "precision": 0.7107438016528925,
+              "recall": 0.7413793103448276,
+              "f1-score": 0.7257383966244726,
+              "support": 116.0
+            },
+            "14": {
+              "precision": 0.7593123209169055,
+              "recall": 0.6385542168674698,
+              "f1-score": 0.693717277486911,
+              "support": 415.0
+            },
+            "15": {
+              "precision": 0.7586206896551724,
+              "recall": 0.528,
+              "f1-score": 0.6226415094339622,
+              "support": 125.0
+            },
+            "16": {
+              "precision": 0.872,
+              "recall": 0.8755020080321285,
+              "f1-score": 0.87374749498998,
+              "support": 249.0
+            },
+            "17": {
+              "precision": 0.7863247863247863,
+              "recall": 0.8214285714285714,
+              "f1-score": 0.8034934497816594,
+              "support": 112.0
+            },
+            "18": {
+              "precision": 0.8024948024948025,
+              "recall": 0.7310606060606061,
+              "f1-score": 0.7651139742319127,
+              "support": 528.0
+            },
+            "19": {
+              "precision": 0.3554817275747508,
+              "recall": 0.5431472081218274,
+              "f1-score": 0.42971887550200805,
+              "support": 197.0
+            },
+            "accuracy": 0.736215691037163,
+            "macro avg": {
+              "precision": 0.7226122182337107,
+              "recall": 0.7539776451112492,
+              "f1-score": 0.728925821804891,
+              "support": 4117.0
+            },
+            "weighted avg": {
+              "precision": 0.7528152720266177,
+              "recall": 0.736215691037163,
+              "f1-score": 0.74061204149792,
+              "support": 4117.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              50,
+              0,
+              6,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1,
+              0,
+              1,
+              2,
+              9
+            ],
+            [
+              1,
+              166,
+              4,
+              4,
+              0,
+              0,
+              3,
+              0,
+              2,
+              6,
+              0,
+              0,
+              1,
+              0,
+              12,
+              3,
+              5,
+              3,
+              3,
+              1
+            ],
+            [
+              4,
+              3,
+              627,
+              5,
+              2,
+              2,
+              11,
+              3,
+              3,
+              42,
+              7,
+              1,
+              10,
+              11,
+              17,
+              3,
+              4,
+              15,
+              31,
+              51
+            ],
+            [
+              0,
+              4,
+              5,
+              47,
+              0,
+              0,
+              4,
+              0,
+              3,
+              3,
+              0,
+              0,
+              0,
+              3,
+              2,
+              0,
+              1,
+              0,
+              2,
+              3
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              95,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              8,
+              0,
+              2,
+              211,
+              0,
+              4,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              15
+            ],
+            [
+              0,
+              0,
+              3,
+              0,
+              0,
+              1,
+              126,
+              1,
+              0,
+              2,
+              1,
+              0,
+              0,
+              1,
+              5,
+              3,
+              0,
+              0,
+              3,
+              0
+            ],
+            [
+              1,
+              1,
+              10,
+              0,
+              0,
+              2,
+              1,
+              117,
+              0,
+              1,
+              3,
+              0,
+              2,
+              0,
+              3,
+              0,
+              0,
+              0,
+              2,
+              17
+            ],
+            [
+              0,
+              5,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              25,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            [
+              2,
+              4,
+              36,
+              0,
+              0,
+              1,
+              9,
+              0,
+              4,
+              230,
+              2,
+              0,
+              5,
+              3,
+              13,
+              3,
+              10,
+              0,
+              5,
+              9
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1,
+              0,
+              9,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              14,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              8,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              4,
+              2,
+              0,
+              94,
+              1,
+              1,
+              0,
+              3,
+              0,
+              1,
+              3
+            ],
+            [
+              0,
+              0,
+              13,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              3,
+              0,
+              2,
+              1,
+              86,
+              1,
+              0,
+              0,
+              0,
+              5,
+              4
+            ],
+            [
+              0,
+              15,
+              21,
+              2,
+              0,
+              0,
+              23,
+              1,
+              8,
+              37,
+              0,
+              0,
+              4,
+              1,
+              265,
+              2,
+              8,
+              2,
+              13,
+              13
+            ],
+            [
+              1,
+              8,
+              1,
+              0,
+              0,
+              2,
+              2,
+              1,
+              2,
+              2,
+              0,
+              0,
+              0,
+              0,
+              12,
+              66,
+              0,
+              0,
+              16,
+              12
+            ],
+            [
+              0,
+              2,
+              6,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              13,
+              0,
+              0,
+              1,
+              2,
+              3,
+              0,
+              218,
+              2,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              11,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              3,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              92,
+              0,
+              4
+            ],
+            [
+              2,
+              3,
+              36,
+              1,
+              4,
+              2,
+              2,
+              0,
+              2,
+              22,
+              3,
+              0,
+              0,
+              3,
+              7,
+              4,
+              0,
+              0,
+              386,
+              51
+            ],
+            [
+              13,
+              0,
+              22,
+              0,
+              1,
+              6,
+              2,
+              12,
+              0,
+              3,
+              1,
+              0,
+              1,
+              7,
+              6,
+              2,
+              1,
+              2,
+              11,
+              107
+            ]
+          ]
+        },
+        "figures": {
+          "confusion_matrix": "figures/logistic_confusion_matrix.png",
+          "roc_curve": "figures/logistic_roc_curve.png",
+          "precision_recall_curve": "figures/logistic_precision_recall_curve.png",
+          "length_distribution": "figures/logistic_length_distribution.png"
+        },
+        "error_analysis": {
+          "most_confident_correct": [
+            {
+              "text": "The Euro is at the weakest level it\u2019s been in 20 years. It is now at par with the dollar.",
+              "true_label": "8",
+              "pred_label": "8",
+              "confidence": 0.9985427916344451,
+              "token_length": 20
+            },
+            {
+              "text": "U.S. CRUDE OIL FUTURES FALL BY $3 TO $93.30",
+              "true_label": "6",
+              "pred_label": "6",
+              "confidence": 0.998443737956028,
+              "token_length": 9
+            },
+            {
+              "text": "U.S. CRUDE OIL FUTURES FALL $4 TO $95.88 A BARREL",
+              "true_label": "6",
+              "pred_label": "6",
+              "confidence": 0.9982200529693633,
+              "token_length": 10
+            },
+            {
+              "text": "BRENT CRUDE OIL FUTURES FALL $5 TO $101.92 A BARREL",
+              "true_label": "6",
+              "pred_label": "6",
+              "confidence": 0.9981072134172251,
+              "token_length": 10
+            },
+            {
+              "text": "$KBWD - Invesco KBW High Dividend Yield Financial ETF declares monthly distribution of $0.1454  https://t.co/G8K31nXLuN",
+              "true_label": "4",
+              "pred_label": "4",
+              "confidence": 0.9978503144508677,
+              "token_length": 15
+            },
+            {
+              "text": "$MTX - Minerals Technologies declares $0.05 dividend  https://t.co/GjZRyHb0SE",
+              "true_label": "4",
+              "pred_label": "4",
+              "confidence": 0.9962291693535326,
+              "token_length": 8
+            },
+            {
+              "text": "$MAC - Macerich declares $0.15 dividend  https://t.co/S55uOL1qWd",
+              "true_label": "4",
+              "pred_label": "4",
+              "confidence": 0.9962291693535326,
+              "token_length": 7
+            },
+            {
+              "text": "$ATR - AptarGroup declares $0.38 dividend  https://t.co/tES0rvXfSP",
+              "true_label": "4",
+              "pred_label": "4",
+              "confidence": 0.9962291693535326,
+              "token_length": 7
+            },
+            {
+              "text": "$WBA - Walgreens Boots declares $0.48 dividend  https://t.co/lvRd5fu7VC",
+              "true_label": "4",
+              "pred_label": "4",
+              "confidence": 0.9962291693535326,
+              "token_length": 8
+            },
+            {
+              "text": "Banner declares $0.44 dividend  https://t.co/E3uoKdbaTz",
+              "true_label": "4",
+              "pred_label": "4",
+              "confidence": 0.9962291693535326,
+              "token_length": 5
+            }
+          ],
+          "most_confident_wrong": [
+            {
+              "text": "$GORO: Gold Resource sold a total of 8,746 ounces of gold and 231,622 ounces of silver in Q2 2022 for a gold...  https://t.co/rFJOiD76eD",
+              "true_label": "2",
+              "pred_label": "10",
+              "confidence": 0.996850585889006,
+              "token_length": 23
+            },
+            {
+              "text": "A JPMorgan gold trader turned whistleblower lied to authorities about gold and silver price manipulation  https://t.co/CIolk3ef8e",
+              "true_label": "12",
+              "pred_label": "10",
+              "confidence": 0.9867161796827087,
+              "token_length": 16
+            },
+            {
+              "text": "$GOLD - Barrick Gold: Trading At A Deep Discount To Fair Value.  https://t.co/l15uwCYorD #trading #economy #business",
+              "true_label": "18",
+              "pred_label": "10",
+              "confidence": 0.983094816274335,
+              "token_length": 16
+            },
+            {
+              "text": "$NGD - New Gold cuts full-year gold production guidance on flooding at Rainy River  https://t.co/OvBXdDUxXx",
+              "true_label": "7",
+              "pred_label": "10",
+              "confidence": 0.9753273535305526,
+              "token_length": 15
+            },
+            {
+              "text": "$BARUF - Baru Gold raises $1.5M in financing to fund Sangihe gold mine project  https://t.co/FnfDr95QNc",
+              "true_label": "2",
+              "pred_label": "10",
+              "confidence": 0.9715967346549044,
+              "token_length": 15
+            },
+            {
+              "text": "$GOLD - Barrick Gold maintains full-year production view after preliminary Q2 results  https://t.co/jdkSonjlfe",
+              "true_label": "7",
+              "pred_label": "10",
+              "confidence": 0.9675795787683025,
+              "token_length": 13
+            },
+            {
+              "text": "$NFLX Q2 Earnings  - EPS: $3.20 vs $2.96 est  - Revs: $7.97B vs $8.04B est. - Shares are up 7.28% after hours",
+              "true_label": "19",
+              "pred_label": "5",
+              "confidence": 0.942803086742734,
+              "token_length": 22
+            },
+            {
+              "text": "$EGO: Eldorado Gold announces Q2 preliminary gold production of 113,462 ounces and maintains full year production...  https://t.co/gM7bosLILA",
+              "true_label": "7",
+              "pred_label": "10",
+              "confidence": 0.923199037642549,
+              "token_length": 17
+            },
+            {
+              "text": "Supreme Court rules that President Biden can shut down a Trump admin. program designed to restrict immigration at the southern border.  https://t.co/FI6Wo1Ba98",
+              "true_label": "12",
+              "pred_label": "16",
+              "confidence": 0.9206810064060355,
+              "token_length": 22
+            },
+            {
+              "text": "$NNDM $SSYS - Stratasys stock gains after Nano Dimension acquires 12.12% stake  https://t.co/wY4bZOq1vG",
+              "true_label": "19",
+              "pred_label": "13",
+              "confidence": 0.9132244616904601,
+              "token_length": 13
+            }
+          ],
+          "misclassified_examples_per_class": {
+            "0": [
+              {
+                "text": "Mizuho says Wall Street is underestimating Kraft Heinz, a stock that can rally more than 25%  https://t.co/1UgwQWn5S2",
+                "pred_label": "15",
+                "confidence": 0.6394498979693976,
+                "token_length": 17
+              },
+              {
+                "text": "$FIGS - Figs stock falls after Goldman Sachs downgrades to \u2018Sell\u2019  https://t.co/Zj9fIdy96s",
+                "pred_label": "19",
+                "confidence": 0.32856221237555905,
+                "token_length": 12
+              },
+              {
+                "text": "$ACDVF $CGJTF - Air Canada stock presents \u2018attractive buying opportunity\u2019 after recent slide - Canaccord Genuity  https://t.co/kedmQUOYoD",
+                "pred_label": "19",
+                "confidence": 0.3224511291580085,
+                "token_length": 17
+              },
+              {
+                "text": "$GPS - The Gap downgraded at Deutsche Bank amid execution issues, executive exit  https://t.co/gmS4jzs8WM",
+                "pred_label": "19",
+                "confidence": 0.2985556549228638,
+                "token_length": 14
+              },
+              {
+                "text": "$CHNG $UNH - Change Healthcare added to positive catalyst list at Citi ahead of UNH trial  https://t.co/B51xuIC5mH",
+                "pred_label": "19",
+                "confidence": 0.29765078187814265,
+                "token_length": 17
+              }
+            ],
+            "1": [
+              {
+                "text": "Reports Italy\u2019s Draghi Has Not Submitted His Resignation To President - ANSA",
+                "pred_label": "16",
+                "confidence": 0.8900447775295949,
+                "token_length": 12
+              },
+              {
+                "text": "Italy\u2019s #Draghi Asks For Confidence Vote To Be Placed In Senate    $EUR",
+                "pred_label": "16",
+                "confidence": 0.8178881200569514,
+                "token_length": 12
+              },
+              {
+                "text": "Welcome President Susan M. Collins! The international macroeconomist began her tenure as the 14th president and CEO of the @BostonFed on July 1. Collins previously served on the board of the @ChicagoFed. Read the article about President Collins:  https://t.co/OSM2kD4Dn5  https://t.co/goMMsfv29K",
+                "pred_label": "17",
+                "confidence": 0.8032659629750243,
+                "token_length": 40
+              },
+              {
+                "text": "Rising interest rates and ballooning credit card debt are a \u2018double whammy,' economist says  https://t.co/myygFJIf5o",
+                "pred_label": "3",
+                "confidence": 0.7772743904894709,
+                "token_length": 15
+              },
+              {
+                "text": "Sweden\u2019s Riksbank may have to accelerate the pace of rate increases after a June inflation reading showed that prices rose faster than it expected  https://t.co/gXGJeYqga1",
+                "pred_label": "14",
+                "confidence": 0.7389115756878977,
+                "token_length": 25
+              }
+            ],
+            "2": [
+              {
+                "text": "$GORO: Gold Resource sold a total of 8,746 ounces of gold and 231,622 ounces of silver in Q2 2022 for a gold...  https://t.co/rFJOiD76eD",
+                "pred_label": "10",
+                "confidence": 0.996850585889006,
+                "token_length": 23
+              },
+              {
+                "text": "$BARUF - Baru Gold raises $1.5M in financing to fund Sangihe gold mine project  https://t.co/FnfDr95QNc",
+                "pred_label": "10",
+                "confidence": 0.9715967346549044,
+                "token_length": 15
+              },
+              {
+                "text": "Hilcorp, Exxon Mobil, ConocoPhillips top greenhouse gas emitters among U.S. oil and gas companies  https://t.co/NAr6VXzIRx",
+                "pred_label": "6",
+                "confidence": 0.8729057659756817,
+                "token_length": 15
+              },
+              {
+                "text": "Vertical Aerospace Secures Pre-Delivery Payment Commitment From American Airlines  https://t.co/qjKLiThGRY  https://t.co/vuOuqTu77q",
+                "pred_label": "19",
+                "confidence": 0.7950916920244638,
+                "token_length": 11
+              },
+              {
+                "text": "$TALO: Talos Energy provides Q2 updates; Average daily production between 65.0 and 65.5 thousand barrels of oil...  https://t.co/TCKu0MdbfW",
+                "pred_label": "6",
+                "confidence": 0.7894368004604911,
+                "token_length": 18
+              }
+            ],
+            "3": [
+              {
+                "text": "Easy liquidity conditions in China are fueling a lucrative carry trade in bonds, with traders betting the gains will be sustained despite signs the central bank bank is moving toward normalizing monetary policy  https://t.co/tMmyN4Gdxu",
+                "pred_label": "1",
+                "confidence": 0.8195245422080908,
+                "token_length": 34
+              },
+              {
+                "text": "Italian government bonds slide as political turmoil put Prime Minister Mario Draghi\u2019s government at risk of collapse, potentially leading to an early election  https://t.co/X3VkuXWAy4",
+                "pred_label": "16",
+                "confidence": 0.732678944772327,
+                "token_length": 24
+              },
+              {
+                "text": "Celanese Corporation Prices an Additional \u20ac1.5 Billion of Permanent Financing for DuPont M&amp;M Acquisition  https://t.co/KNiBOyWZDE",
+                "pred_label": "13",
+                "confidence": 0.7199428340497905,
+                "token_length": 15
+              },
+              {
+                "text": "Longer maturity Treasury yields have scope to go higher still and the market is erring in pricing in Fed interest-rate cuts in the latter part of 2023, according to Franklin Templeton  https://t.co/EaKrtLN13D",
+                "pred_label": "1",
+                "confidence": 0.683671760243066,
+                "token_length": 32
+              },
+              {
+                "text": "Longer maturity Treasury yields have scope to go higher still and the market is erring in pricing in Fed interest-rate cuts in the latter part of 2023, according to Franklin Templeton  https://t.co/KkTCLG66m2",
+                "pred_label": "1",
+                "confidence": 0.683671760243066,
+                "token_length": 32
+              }
+            ],
+            "4": [
+              {
+                "text": "Harleysville Financial Corporation Announces Regular Cash Dividend and Third Quarter Earnings for Fiscal Year 2022  https://t.co/abhIbBZmPK  https://t.co/zhRtSfEIpK",
+                "pred_label": "5",
+                "confidence": 0.5825076283456518,
+                "token_length": 17
+              },
+              {
+                "text": "$MTB - M&amp;T Bank authorizes $3B in share repurchase program, declares preferred dividends  https://t.co/pyR2Rr6Nby",
+                "pred_label": "19",
+                "confidence": 0.2481094105846566,
+                "token_length": 14
+              }
+            ],
+            "5": [
+              {
+                "text": "Orchid Island Capital Announces Estimated Second Quarter 2022 Results, July 2022 Monthly Dividend and June 30, 2022 RMBS Portfolio Characteristics  https://t.co/EqRoJTevvS  https://t.co/IXPHxdjv9b",
+                "pred_label": "4",
+                "confidence": 0.5197163959155906,
+                "token_length": 22
+              },
+              {
+                "text": "Martin Midstream Partners Reports Second Quarter 2022 Financial Results, Increases Annual Guidance and Declares Quarterly Cash Distribution  https://t.co/zbjaGHlvmm  https://t.co/GRpMWOB4mf",
+                "pred_label": "4",
+                "confidence": 0.49766645582158037,
+                "token_length": 19
+              },
+              {
+                "text": "$AAPL - Apple likely to meet Q3 results, but all eyes on demand as iPhone 14 gets set to launch  https://t.co/n8HjOuWrKT",
+                "pred_label": "2",
+                "confidence": 0.46669856635245166,
+                "token_length": 21
+              },
+              {
+                "text": "These companies are likely to beat earnings expectations this season, Bank of America says  https://t.co/xUe6D6sbhN",
+                "pred_label": "7",
+                "confidence": 0.4580701189054084,
+                "token_length": 15
+              },
+              {
+                "text": "$JPM | JPMorgan Q2 22 Earnings:  - EPS: $2.76 (exp $2.88)  - Revenue: $31.63B (exp $31.98B)  - Temporarily Suspended Share Buybacks   - Investment Banking Revenue: $1.35B (exp $1.92B)",
+                "pred_label": "7",
+                "confidence": 0.37829540936232425,
+                "token_length": 28
+              }
+            ],
+            "6": [
+              {
+                "text": "Copper supply shortages will be so \"unprecedented and untenable\" in coming years that it could derail the global shift away from fossil fuels, S&amp;P Global says (via @climate)  https://t.co/sE4TuEGdva",
+                "pred_label": "10",
+                "confidence": 0.6900593536950359,
+                "token_length": 29
+              },
+              {
+                "text": "#Energy futures mostly lower before the open $XLE $GPS $SPY $QQQ $DIA $CL_F $NG_F  https://t.co/LzEmmlQJhI #economy #stockmarket",
+                "pred_label": "15",
+                "confidence": 0.4262926827682694,
+                "token_length": 17
+              },
+              {
+                "text": "Corn took out support on the Monthly and Weekly charts. Look for it to run down to Close The Gap at 606-608.",
+                "pred_label": "18",
+                "confidence": 0.3859192187379025,
+                "token_length": 22
+              },
+              {
+                "text": "Expensive gasoline is keeping more US drivers off the road than the Covid-19 pandemic did at this time two years ago  https://t.co/esCTICoUwh",
+                "pred_label": "9",
+                "confidence": 0.3735202175040711,
+                "token_length": 22
+              },
+              {
+                "text": "Goldman Sachs Revises Copper Price Targets For 3, 6, 12 Months  - 3-Month Forecast Revised To $6,700/T Vs. $8,650/T  - 6-Month Forecast Revised To $7,600/T Vs $10,500/T  - 12-Month Forecast Revised To $9,000/T Vs $12,000/T",
+                "pred_label": "14",
+                "confidence": 0.36897711625592994,
+                "token_length": 35
+              }
+            ],
+            "7": [
+              {
+                "text": "$NGD - New Gold cuts full-year gold production guidance on flooding at Rainy River  https://t.co/OvBXdDUxXx",
+                "pred_label": "10",
+                "confidence": 0.9753273535305526,
+                "token_length": 15
+              },
+              {
+                "text": "$GOLD - Barrick Gold maintains full-year production view after preliminary Q2 results  https://t.co/jdkSonjlfe",
+                "pred_label": "10",
+                "confidence": 0.9675795787683025,
+                "token_length": 13
+              },
+              {
+                "text": "$EGO: Eldorado Gold announces Q2 preliminary gold production of 113,462 ounces and maintains full year production...  https://t.co/gM7bosLILA",
+                "pred_label": "10",
+                "confidence": 0.923199037642549,
+                "token_length": 17
+              },
+              {
+                "text": "$CPA: Copa Holdings reports June traffic declined 3.4% from June 2019  https://t.co/wb5MXCaRL5",
+                "pred_label": "14",
+                "confidence": 0.6055114544636035,
+                "token_length": 12
+              },
+              {
+                "text": "PepsiCo reiterates outlook as second-quarter earnings top expectations  https://t.co/31eOBLq1Cn",
+                "pred_label": "5",
+                "confidence": 0.602733106863236,
+                "token_length": 9
+              }
+            ],
+            "8": [
+              {
+                "text": "Euro jumps on a report ECB will consider half-point rate hike  https://t.co/3hdnPTtOXr",
+                "pred_label": "1",
+                "confidence": 0.5341188031843892,
+                "token_length": 12
+              },
+              {
+                "text": "Euro rallies and bund yields jump after half-percentage-point ECB rate hike  https://t.co/CDjztPozfk",
+                "pred_label": "1",
+                "confidence": 0.45526825563738166,
+                "token_length": 12
+              },
+              {
+                "text": "The euro rallies as traders raised bets on the scale of future policy tightening by the European Central Bank after it raised borrowing costs by more than expected  https://t.co/vxjpQvwspJ",
+                "pred_label": "1",
+                "confidence": 0.44259449639224163,
+                "token_length": 29
+              },
+              {
+                "text": "The euro traded below $1 for the first time in 20 years, reflecting both surging U.S. inflation that's raising expectations for Federal Reserve rate hikes as well as the energy crisis in the eurozone.  https://t.co/htoAWtY5yM  https://t.co/8T8jm3160a",
+                "pred_label": "1",
+                "confidence": 0.4288218901844663,
+                "token_length": 36
+              },
+              {
+                "text": "Japan's Yen Weakness Has Changed The Competitive Landscape.  https://t.co/mw5FxmRfT7 #markets #business #finance",
+                "pred_label": "18",
+                "confidence": 0.22200310966130188,
+                "token_length": 12
+              }
+            ],
+            "9": [
+              {
+                "text": "For the first time in two decades, one euro is worth the same as a single US dollar \u2014 here's why  https://t.co/wDH7M5okOL",
+                "pred_label": "8",
+                "confidence": 0.9070032921268504,
+                "token_length": 22
+              },
+              {
+                "text": "Amid fears in Europe that the Nord Stream 1 pipeline\u2019s planned maintenance shutdown could be extended, here\u2019s a look at the energy alternatives if Russia turns off the gas taps  https://t.co/52JuXswBsf  https://t.co/S2s8tH9yQg",
+                "pred_label": "6",
+                "confidence": 0.8127332900701167,
+                "token_length": 32
+              },
+              {
+                "text": "Saudi Arabia will open its airspace to all airlines, including flights to and from Israel, in what's seen as a win for US President Joe Biden  https://t.co/zq6B4mXwjh",
+                "pred_label": "16",
+                "confidence": 0.7670295754246188,
+                "token_length": 27
+              },
+              {
+                "text": "A trader is pocketing big profits for breaking with the pack and placing a sizable bet that the Fed won\u2019t increase the size of its interest-rate hikes  https://t.co/UxMRRUiPZH",
+                "pred_label": "1",
+                "confidence": 0.6611638389736267,
+                "token_length": 28
+              },
+              {
+                "text": "In today's Bloomberg Deals newsletter, we talk to the private equity firm of NFL great Steve Young, recap the epic Twitter filing and Unity does a $4 billion acquisition  https://t.co/K30fznG4EM",
+                "pred_label": "13",
+                "confidence": 0.6566687431808965,
+                "token_length": 30
+              }
+            ],
+            "10": [
+              {
+                "text": "Goldman Sachs: Aluminium And Zinc Expected To Outperform Copper If Gas Flows Remain At Zero Post-NS1 Maintenance    #NordStream1",
+                "pred_label": "6",
+                "confidence": 0.2452509819059609,
+                "token_length": 18
+              },
+              {
+                "text": "JUST IN: Copper tumbles to its lowest level in 20 months as fears of a worldwide recession continue to mount  https://t.co/iFe363riNF",
+                "pred_label": "14",
+                "confidence": 0.24061433580026606,
+                "token_length": 21
+              },
+              {
+                "text": "UBS: Lowers Gold Forecast To $1,600/Oz At End-Sep And End-2022 (From $1,800 And $1,700, Respectively)  - End-June 2023 Target Is $1,650/Oz",
+                "pred_label": "14",
+                "confidence": 0.21017093629950434,
+                "token_length": 21
+              },
+              {
+                "text": "UBS: LOWERS GOLD FORECAST TO USD 1,600/OZ AT END-SEPTEMBER AND END-2022 (FROM USD 1,800 AND USD 1,700, RESPECTIVELY). END-JUNE 2023 TARGET IS USD 1,650/OZ",
+                "pred_label": "8",
+                "confidence": 0.145548087500104,
+                "token_length": 24
+              }
+            ],
+            "11": [],
+            "12": [
+              {
+                "text": "A JPMorgan gold trader turned whistleblower lied to authorities about gold and silver price manipulation  https://t.co/CIolk3ef8e",
+                "pred_label": "10",
+                "confidence": 0.9867161796827087,
+                "token_length": 16
+              },
+              {
+                "text": "Supreme Court rules that President Biden can shut down a Trump admin. program designed to restrict immigration at the southern border.  https://t.co/FI6Wo1Ba98",
+                "pred_label": "16",
+                "confidence": 0.9206810064060355,
+                "token_length": 22
+              },
+              {
+                "text": "Two New York state residents were charged in a $27 million fraud in which they allegedly raised money from foreign nationals for phony investments by claiming they had access to politicians like then-president Donald Trump  https://t.co/O4qdhXGbVX",
+                "pred_label": "16",
+                "confidence": 0.37317363631280864,
+                "token_length": 36
+              },
+              {
+                "text": "A judge in Tennessee temporarily blocked the Biden administration\u2019s rules ensuring transgender people at schools and workplaces have access to bathrooms, locker rooms and sports teams  https://t.co/lbR7w52Ojz",
+                "pred_label": "16",
+                "confidence": 0.3712772813803609,
+                "token_length": 27
+              },
+              {
+                "text": "Three people have been charged in New York with conspiring to illegally possess about 100 pages of manuscripts related to the Eagles album \u201cHotel California\u201d  https://t.co/zDR0YewDTF",
+                "pred_label": "9",
+                "confidence": 0.3405954874252363,
+                "token_length": 26
+              }
+            ],
+            "13": [
+              {
+                "text": "$TELL: Tellurian to purchase natural gas assets from privately held EnSight IV Energy Partners and EnSight...  https://t.co/RFwnaFTer7",
+                "pred_label": "6",
+                "confidence": 0.8005027685755827,
+                "token_length": 17
+              },
+              {
+                "text": "Mobility app Marti will announce its planned merger with a blank-check company within weeks, a deal that marks the first IPO by a Turkish company via a SPAC in New York  https://t.co/MUwoT2xHKU",
+                "pred_label": "11",
+                "confidence": 0.6718736437125082,
+                "token_length": 32
+              },
+              {
+                "text": "$YHEKF - Yeahka Ramps Up E-Commerce Bid, But Investors Cash Out.  https://t.co/ykA9pFh9Qf #stockmarket #finance #trading",
+                "pred_label": "18",
+                "confidence": 0.6318832792491331,
+                "token_length": 15
+              },
+              {
+                "text": "$FFHL - Fuwei Films unit to merge with video-centric technology solution provider Baijiayun  https://t.co/T6kfi6Mt1q",
+                "pred_label": "2",
+                "confidence": 0.4497154504413192,
+                "token_length": 14
+              },
+              {
+                "text": "$SIMO $MXL - MaxLinear filed with China's antitrust regulator for planned Silicon Motion deal  https://t.co/mpivO5GVCR",
+                "pred_label": "12",
+                "confidence": 0.39790644377945733,
+                "token_length": 15
+              }
+            ],
+            "14": [
+              {
+                "text": "SAUDI ARABIA IMPORTS AT LEAST 647,000 T OF RUSSIAN FUEL OIL IN APR-JUNE, MORE THAN DOUBLE IMPORTS A YEAR EARLIER- DATA, TRADERS",
+                "pred_label": "6",
+                "confidence": 0.8110186881472037,
+                "token_length": 22
+              },
+              {
+                "text": "Small Business Expectations Disconnect.  https://t.co/mnHLnC0OxS #markets #finance #trading",
+                "pred_label": "18",
+                "confidence": 0.7034883409969419,
+                "token_length": 8
+              },
+              {
+                "text": "European leaders rushed to secure a handful of energy-supply deals, part of a broader, monthslong effort by the continent to reduce its reliance on energy from Russia   https://t.co/2YsaGQ1IY3",
+                "pred_label": "6",
+                "confidence": 0.6806283121787025,
+                "token_length": 28
+              },
+              {
+                "text": "The U.S. Economy Is Facing An Unusual Disconnect.  https://t.co/JsHUvbmwUh #stockmarket #investing #markets",
+                "pred_label": "18",
+                "confidence": 0.6711732091616814,
+                "token_length": 12
+              },
+              {
+                "text": "Inflation hits a fresh four-decade high of 8.1%, keeping up pressure on the Bank of Canada to deliver aggressive interest rate hikes  https://t.co/kojmxpCReb",
+                "pred_label": "1",
+                "confidence": 0.6437567090512706,
+                "token_length": 23
+              }
+            ],
+            "15": [
+              {
+                "text": "Stock-market investors are still wagering that the US economy will avoid a recession even as the Fed and other central banks raise interest rates aggressively to get decades-high inflation under control  https://t.co/zkJUz0Nla4",
+                "pred_label": "1",
+                "confidence": 0.7372637334114005,
+                "token_length": 32
+              },
+              {
+                "text": ".@ines_ferre checks out this morning\u2019s market and sector losses, Chinese stocks amid tech crackdowns and rising COVID cases, the U.S. dollar, and $WTI crude oil pricing.  https://t.co/f7LNtf3VWo",
+                "pred_label": "6",
+                "confidence": 0.7144144250040184,
+                "token_length": 27
+              },
+              {
+                "text": "Indices ETF's green again.  $AAPL at day high helping",
+                "pred_label": "18",
+                "confidence": 0.6047508231530931,
+                "token_length": 9
+              },
+              {
+                "text": "Stocks To Consider After June's Consumer Price Index Spike.  https://t.co/8fvWLWv23D #stockmarket #markets #stocks",
+                "pred_label": "14",
+                "confidence": 0.6020637743130535,
+                "token_length": 13
+              },
+              {
+                "text": "- US futures drop - Dollar advances - Treasury yields climb  Latest markets updates:  https://t.co/bd6nfV8LZm  https://t.co/xRYA1X638y",
+                "pred_label": "8",
+                "confidence": 0.5228320685936322,
+                "token_length": 16
+              }
+            ],
+            "16": [
+              {
+                "text": "Joe Biden wanted to ostracize Saudi Arabia over human rights. That was before the price of oil hit the US economy  https://t.co/F5jIX0t47n",
+                "pred_label": "6",
+                "confidence": 0.6877163563879385,
+                "token_length": 22
+              },
+              {
+                "text": "Texas Democrats are getting a lift from voters passionate about gun control and abortion rights, but the goal of winning state races is hampered by what is shaping up to be one of the worst years ever for the party nationally  https://t.co/pJIz3nmdHQ",
+                "pred_label": "9",
+                "confidence": 0.48504244425085136,
+                "token_length": 42
+              },
+              {
+                "text": "The House panel investigating the assault on the US Capitol met with representatives of the Homeland Security Department\u2019s watchdog who said the Secret Service isn\u2019t cooperating with its investigation  https://t.co/UR1pDPEDqY",
+                "pred_label": "12",
+                "confidence": 0.4654378802415017,
+                "token_length": 30
+              },
+              {
+                "text": "One thing that would happen if Republicans take the Senate in November: Judicial nominations are likely to screech to a halt, writes @jbview  https://t.co/ACTdtmmuMM via @opinion",
+                "pred_label": "9",
+                "confidence": 0.4208667185580674,
+                "token_length": 26
+              },
+              {
+                "text": "\u201cThis is going to open people\u2019s eyes in a big way,\u201d said Rep. Adam Kinzinger said Sunday.  https://t.co/KjBp3bbyAW",
+                "pred_label": "9",
+                "confidence": 0.37564770889646587,
+                "token_length": 18
+              }
+            ],
+            "17": [
+              {
+                "text": "AIM-HI Accelerator Fund Announces Lance Kawaguchi, CEO of Cure Brain Cancer Foundation, as New Strategic Advisor  https://t.co/lIvzBQLAnE  https://t.co/E6q7byO5NE",
+                "pred_label": "2",
+                "confidence": 0.34684722393299683,
+                "token_length": 18
+              },
+              {
+                "text": "$GTGEF - G2 Energy names James Tague as president of G2 Energy Holdings US  https://t.co/Nizwh3Ko67",
+                "pred_label": "6",
+                "confidence": 0.34560533019085476,
+                "token_length": 15
+              },
+              {
+                "text": "Shigenobu Nagamori is back at the top of Nidec, one of Japan\u2019s biggest companies, and doesn\u2019t intend to leave until he\u2019s boosted the company\u2019s share price to a record  https://t.co/8qyBqPIGlJ",
+                "pred_label": "19",
+                "confidence": 0.30866246883403464,
+                "token_length": 30
+              },
+              {
+                "text": "Barnes Joins the Ellen MacArthur Foundation\u2019s Global Network  https://t.co/gEylTOBo3q  https://t.co/8m6HGVLhip",
+                "pred_label": "2",
+                "confidence": 0.2722204040551838,
+                "token_length": 10
+              },
+              {
+                "text": "SkyKnight Joins Novata General Partner Advisory Committee to Advance ESG in Private Markets  https://t.co/9hG2k0WlBK  https://t.co/6bUuoBk4sO",
+                "pred_label": "2",
+                "confidence": 0.2629648240832105,
+                "token_length": 15
+              }
+            ],
+            "18": [
+              {
+                "text": "$GOLD - Barrick Gold: Trading At A Deep Discount To Fair Value.  https://t.co/l15uwCYorD #trading #economy #business",
+                "pred_label": "10",
+                "confidence": 0.983094816274335,
+                "token_length": 16
+              },
+              {
+                "text": "$BTG - B2Gold: Solid Gold Production For The Second Quarter.  https://t.co/PfZrsEo87n #stocks #finance #trading",
+                "pred_label": "10",
+                "confidence": 0.8822521532924511,
+                "token_length": 14
+              },
+              {
+                "text": "$VLCN Last week PR: For the first 14 days the pre-orders skyrocketed ! We didn't expect such growth \"Volcon Receives Thousands of Pre-Orders for its Stag in First 14 Days; $70M+ of Potential Revenue\". We could see a nice bounce from current levels.",
+                "pred_label": "19",
+                "confidence": 0.8362001883100467,
+                "token_length": 43
+              },
+              {
+                "text": "@cdunwody Gold really only has one open. There is no pit trading.",
+                "pred_label": "10",
+                "confidence": 0.8242322443178847,
+                "token_length": 12
+              },
+              {
+                "text": "BOK: INFLATION WILL REMAIN HIGH FOR SOME TIME",
+                "pred_label": "14",
+                "confidence": 0.6641080977195899,
+                "token_length": 8
+              }
+            ],
+            "19": [
+              {
+                "text": "$NFLX Q2 Earnings  - EPS: $3.20 vs $2.96 est  - Revs: $7.97B vs $8.04B est. - Shares are up 7.28% after hours",
+                "pred_label": "5",
+                "confidence": 0.942803086742734,
+                "token_length": 22
+              },
+              {
+                "text": "$NNDM $SSYS - Stratasys stock gains after Nano Dimension acquires 12.12% stake  https://t.co/wY4bZOq1vG",
+                "pred_label": "13",
+                "confidence": 0.9132244616904601,
+                "token_length": 13
+              },
+              {
+                "text": "$RXDX - Prometheus Biosciences gains as Goldman Sachs starts coverage with buy rating  https://t.co/4Gruo3Kp9k",
+                "pred_label": "0",
+                "confidence": 0.7644393949556022,
+                "token_length": 14
+              },
+              {
+                "text": "$TXMD - TherapeuticsMD plunges 42% as merger agreement ends  https://t.co/LcsX6qPLzS",
+                "pred_label": "13",
+                "confidence": 0.729887291382023,
+                "token_length": 10
+              },
+              {
+                "text": "$NVDA down on lowered guidance. Q2 revenue est now $8.1B vs $8.45B",
+                "pred_label": "7",
+                "confidence": 0.7284742771031945,
+                "token_length": 12
+              }
+            ]
+          },
+          "misclassification_patterns": {
+            "has_negation": {
+              "examples_with_pattern": 118,
+              "misclassified_with_pattern": 28,
+              "error_rate": 0.23728813559322035,
+              "share_of_all_errors": 0.02578268876611418
+            },
+            "has_sarcasm_cue": {
+              "examples_with_pattern": 0,
+              "misclassified_with_pattern": 0,
+              "error_rate": null,
+              "share_of_all_errors": null
+            },
+            "is_short": {
+              "examples_with_pattern": 53,
+              "misclassified_with_pattern": 26,
+              "error_rate": 0.49056603773584906,
+              "share_of_all_errors": 0.02394106813996317
+            },
+            "has_emphasis": {
+              "examples_with_pattern": 2960,
+              "misclassified_with_pattern": 748,
+              "error_rate": 0.2527027027027027,
+              "share_of_all_errors": 0.6887661141804788
+            },
+            "length_summary": {
+              "avg_length_correct": 18.45100626855823,
+              "avg_length_wrong": 18.17587476979742,
+              "median_length_correct": 16.0,
+              "median_length_wrong": 15.0
+            }
+          }
+        }
+      }
+    }
+  }
+}
