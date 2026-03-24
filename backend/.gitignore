@@ -1,0 +1,43 @@
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+*.so
+
+# ── Virtual environment ──────────────────────────────────────
+.venv/
+venv/
+ENV/
+env/
+
+# ── Environment ──────────────────────────────────────────────
+.env
+
+# ── IDE ──────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Testing ──────────────────────────────────────────────────
+.pytest_cache/
+htmlcov/
+.coverage
+
+# ── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Large model files (use Git LFS if needed) ────────────────
+# Uncomment these lines if you do NOT want to track models in Git:
+# models/*.h5
+# models/*.pkl
+# models/distilbert_model/
+# models/distilbert_tokenizer/
