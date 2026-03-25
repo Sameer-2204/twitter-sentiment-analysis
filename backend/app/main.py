@@ -54,7 +54,7 @@ app = FastAPI(
 
 # ── CORS middleware ───────────────────────────────────────────
 _origins = [
-    *settings.ALLOWED_ORIGINS,
+    *settings.allowed_origins_list,
     "http://localhost:5173",
     "http://localhost:3000",
     "http://localhost:8000",

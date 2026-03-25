@@ -21,18 +21,12 @@ class Settings(BaseSettings):
     APP_NAME: str = "Twitter Sentiment Analysis API"
     VERSION: str = "1.0.0"
     DEBUG: bool = False
-    ALLOWED_ORIGINS: List[str] = [
-        "https://*.vercel.app",
-        "http://localhost:*",
-    ]
+    ALLOWED_ORIGINS: str = "https://*.vercel.app,http://localhost:*"
 
-    @field_validator("ALLOWED_ORIGINS", mode="before")
-    @classmethod
-    def parse_origins(cls, v):
-        """Accept comma-separated string or JSON list."""
-        if isinstance(v, str):
-            return [o.strip() for o in v.split(",") if o.strip()]
-        return v
+    @property
+    def allowed_origins_list(self) -> list[str]:
+        """Split comma-separated origins into a list."""
+        return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
 
     # ── Paths ─────────────────────────────────────────────────
     BASE_DIR: Path = Path(__file__).resolve().parent.parent  # backend/
