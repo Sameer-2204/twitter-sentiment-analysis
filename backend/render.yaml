@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: twitter-sentiment-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: backend
+    healthCheckPath: /api/health
+    envVars:
+      - key: LIGHTWEIGHT_MODE
+        value: "false"
+      - key: LAZY_LOADING
+        value: "true"
+      - key: ALLOWED_ORIGINS
+        value: "https://your-frontend.vercel.app,http://localhost:5173"
+      - key: DEBUG
+        value: "false"

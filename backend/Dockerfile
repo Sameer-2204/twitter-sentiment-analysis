@@ -1,39 +1,38 @@
 FROM python:3.10-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 WORKDIR /app
 
 # ── System dependencies ──────────────────────────────────────
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    curl \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Python dependencies (cached layer) ───────────────────────
+# ── Python dependencies ──────────────────────────────────────
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# ── Download NLTK data ───────────────────────────────────────
-RUN python -c "import nltk; nltk.download('stopwords'); \
-    nltk.download('punkt'); nltk.download('punkt_tab'); \
-    nltk.download('wordnet')"
+# ── NLTK data (needed by EDA service) ────────────────────────
+RUN python -c "import nltk; \
+    nltk.download('stopwords', quiet=True); \
+    nltk.download('punkt', quiet=True); \
+    nltk.download('punkt_tab', quiet=True); \
+    nltk.download('wordnet', quiet=True)"
 
-# ── Copy application code ────────────────────────────────────
+# ── Copy application ─────────────────────────────────────────
 COPY app/ app/
-
-# ── Copy data and model artefacts ────────────────────────────
-# These can also be mounted as volumes in production
+COPY scripts/ scripts/
 COPY data/ data/
 COPY models/ models/
 COPY reports/ reports/
 
-# ── Expose port ──────────────────────────────────────────────
-EXPOSE 8000
+EXPOSE 10000
 
-# ── Health check ─────────────────────────────────────────────
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
+    CMD curl -f http://127.0.0.1:${PORT:-10000}/api/health || exit 1
 
-# ── Start server ─────────────────────────────────────────────
-# workers=1 because ML models are loaded in-process memory.
-# Multiple workers would duplicate RAM usage.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Render sets $PORT (default 10000). Single worker to avoid RAM duplication.
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000} --workers 1

@@ -18,6 +18,7 @@ their respective loader methods.
 from __future__ import annotations
 
 import gc
+from importlib.util import find_spec
 import logging
 import pickle
 import time
@@ -168,6 +169,11 @@ class SentimentPredictor:
             self._load_pickle_model("logistic_regression", settings.LOGISTIC_REGRESSION_PATH)
 
         elif model_name in ("lstm", "bilstm", "cnn"):
+            if find_spec("tensorflow") is None:
+                raise ValueError(
+                    f"Model '{model_name}' requires TensorFlow, which is not installed "
+                    "in this Railway deployment."
+                )
             # Ensure Keras tokenizer is loaded (shared)
             if self.keras_tokenizer is None:
                 self._load_keras_tokenizer(settings.TOKENIZER_PATH)
@@ -179,6 +185,11 @@ class SentimentPredictor:
             self._load_keras_model(model_name, path_map[model_name])
 
         elif model_name == "distilbert":
+            if find_spec("torch") is None or find_spec("transformers") is None:
+                raise ValueError(
+                    "Model 'distilbert' requires PyTorch and Transformers, which are "
+                    "not installed in this Railway deployment."
+                )
             self._load_distilbert(
                 model_path=settings.DISTILBERT_MODEL_PATH,
                 tokenizer_path=settings.DISTILBERT_TOKENIZER_PATH,

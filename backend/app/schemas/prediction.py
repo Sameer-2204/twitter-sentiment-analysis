@@ -20,9 +20,9 @@ class PredictionRequest(BaseModel):
         json_schema_extra={"example": "I love this product! Best purchase ever."},
     )
     model_name: str = Field(
-        default="distilbert",
+        default="logistic_regression",
         description="Model to use for prediction.",
-        json_schema_extra={"example": "distilbert"},
+        json_schema_extra={"example": "logistic_regression"},
     )
 
 

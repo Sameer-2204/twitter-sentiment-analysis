@@ -126,7 +126,7 @@ async def predict_batch(
         ..., description="CSV file with a 'text' column"
     ),
     model_name: str = Query(
-        "distilbert",
+        "logistic_regression",
         description="Model to use for prediction",
     ),
 ):

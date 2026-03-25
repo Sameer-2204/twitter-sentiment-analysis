@@ -12,7 +12,7 @@ REST API for Twitter sentiment analysis using 5 ML/DL models. Powers the React d
 | Transformer | PyTorch + HuggingFace Transformers (DistilBERT) |
 | Data | pandas, NumPy |
 | Config | Pydantic Settings |
-| Deployment | Docker, Railway |
+| Deployment | Docker, Render |
 
 ## Setup
 
@@ -49,6 +49,7 @@ ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/health` | Service health & readiness |
+| GET | `/api/cors-test` | CORS configuration debug |
 
 ### Dashboard
 | Method | Path | Description |
@@ -94,6 +95,8 @@ backend/
 │   ├── main.py              # FastAPI app, CORS, startup/shutdown
 │   ├── config.py            # Pydantic BaseSettings
 │   ├── dependencies.py      # DI functions for Depends()
+│   ├── middleware/
+│   │   └── rate_limiter.py  # Per-IP rate limiting (30 req/min)
 │   ├── schemas/
 │   │   ├── prediction.py    # Request/response models
 │   │   ├── dashboard.py
@@ -110,41 +113,68 @@ backend/
 │       ├── eda.py
 │       ├── models.py
 │       └── predict.py
+├── scripts/
+│   ├── check_deployment.py  # Pre-deploy readiness checker
+│   └── test_api.py          # Smoke-test all endpoints
 ├── requirements.txt
 ├── Dockerfile
-├── railway.json
+├── render.yaml
 ├── .env.example
 └── .gitignore
 ```
 
-## Deployment (Railway)
+## Deployment (Render)
 
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
+### Option 1 — Deploy via Dashboard
 
-# Login and link
-railway login
-railway link
+1. Go to [render.com](https://render.com) → Sign in with GitHub
+2. Click **New +** → **Web Service**
+3. Connect your `twitter-sentiment-analysis` repository
+4. Configure:
+   - **Root Directory:** `backend`
+   - **Runtime:** Docker
+   - **Instance Type:** Free
+5. Add environment variables:
 
-# Deploy
-railway up
+| Variable | Value |
+|----------|-------|
+| `LIGHTWEIGHT_MODE` | `false` |
+| `LAZY_LOADING` | `true` |
+| `ALLOWED_ORIGINS` | `https://your-frontend.vercel.app` |
+
+6. Click **Deploy Web Service**
+
+### Option 2 — Deploy via Blueprint
+
+1. Push the repo with `render.yaml` in `backend/`
+2. Go to Render Dashboard → **New +** → **Blueprint**
+3. Select the repository — Render reads `render.yaml` automatically
+
+### After Deployment
+
+Your API will be available at:
+```
+https://twitter-sentiment-api-xxxx.onrender.com
 ```
 
-### Environment Variables (set in Railway dashboard)
+- Swagger UI: `https://your-url.onrender.com/docs`
+- Health check: `https://your-url.onrender.com/api/health`
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DEBUG` | Enable debug mode | `False` |
-| `ALLOWED_ORIGINS` | CORS origins (comma-separated) | `localhost` |
-| `PORT` | Server port (set by Railway) | `8000` |
+> **Note:** Render free tier spins down after 15 min of inactivity. First request after idle takes ~30-50s (cold start).
 
-> **Note:** Railway uses `$PORT` environment variable. The `railway.json` start command already references it.
+## Memory & Performance
 
-## Memory Considerations
+- **LIGHTWEIGHT_MODE=false**: All 5 models available. LR loads at startup, heavy models lazy-load on first request.
+- **LAZY_LOADING=true**: Only one heavy model kept in RAM at a time. Previous heavy model unloaded automatically.
+- **Rate limiting**: 30 predictions/minute per IP on prediction endpoints.
+- **Cache headers**: Dashboard (5 min), EDA (10 min), Models (1 hr), Predictions (no-cache).
 
-Loading all 5 models requires ~3-4 GB RAM. For Railway free tier:
+## Scripts
 
-- Use `tensorflow-cpu` instead of `tensorflow`
-- Use `torch` CPU-only build
-- See comments in `requirements.txt` for instructions
+```bash
+# Check deployment readiness
+python scripts/check_deployment.py
+
+# Test all API endpoints (server must be running)
+python scripts/test_api.py
+```

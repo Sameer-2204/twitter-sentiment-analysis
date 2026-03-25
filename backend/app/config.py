@@ -85,12 +85,33 @@ class Settings(BaseSettings):
         """Resolve default paths relative to BASE_DIR after init."""
         project_root = self.BASE_DIR.parent  # twitter_analysis/
 
+        def resolve_shared_dir(name: str) -> Path:
+            candidates = [
+                self.BASE_DIR / name,
+                project_root / name,
+            ]
+
+            for candidate in candidates:
+                if candidate.is_dir():
+                    has_real_content = any(
+                        child.name != ".gitkeep"
+                        for child in candidate.rglob("*")
+                    )
+                    if has_real_content:
+                        return candidate
+
+            for candidate in candidates:
+                if candidate.exists():
+                    return candidate
+
+            return self.BASE_DIR / name
+
         if self.DATA_DIR is None:
-            self.DATA_DIR = project_root / "data"
+            self.DATA_DIR = resolve_shared_dir("data")
         if self.MODELS_DIR is None:
-            self.MODELS_DIR = project_root / "models"
+            self.MODELS_DIR = resolve_shared_dir("models")
         if self.REPORTS_DIR is None:
-            self.REPORTS_DIR = project_root / "reports"
+            self.REPORTS_DIR = resolve_shared_dir("reports")
 
         if self.TRAIN_DATA_PATH is None:
             self.TRAIN_DATA_PATH = self.DATA_DIR / "train_data.csv"
