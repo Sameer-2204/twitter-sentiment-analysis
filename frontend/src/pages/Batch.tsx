@@ -31,11 +31,11 @@ const SENT_COLORS: Record<Sentiment, string> = {
 };
 
 const MODELS = [
+  { value: "logistic_regression", label: "Logistic Regression" },
   { value: "distilbert", label: "DistilBERT" },
   { value: "cnn", label: "CNN" },
   { value: "bilstm", label: "BiLSTM" },
   { value: "lstm", label: "LSTM" },
-  { value: "logistic_regression", label: "Logistic Regression" },
 ];
 
 const PAGE_SIZE = 10;
@@ -101,7 +101,7 @@ const generateSampleCSV = () => {
 const Batch: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [model, setModel] = useState("distilbert");
+  const [model, setModel] = useState("logistic_regression");
   const [dragOver, setDragOver] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
 

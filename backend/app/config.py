@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List, Optional
 
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
@@ -30,24 +30,24 @@ class Settings(BaseSettings):
 
     # ── Paths ─────────────────────────────────────────────────
     BASE_DIR: Path = Path(__file__).resolve().parent.parent  # backend/
-    DATA_DIR: Path = Field(default=None)
-    MODELS_DIR: Path = Field(default=None)
-    REPORTS_DIR: Path = Field(default=None)
+    DATA_DIR: Optional[Path] = Field(default=None)
+    MODELS_DIR: Optional[Path] = Field(default=None)
+    REPORTS_DIR: Optional[Path] = Field(default=None)
 
     # ── Dataset paths ─────────────────────────────────────────
-    TRAIN_DATA_PATH: Path = Field(default=None)
-    VALID_DATA_PATH: Path = Field(default=None)
+    TRAIN_DATA_PATH: Optional[Path] = Field(default=None)
+    VALID_DATA_PATH: Optional[Path] = Field(default=None)
 
     # ── Model paths ───────────────────────────────────────────
-    LOGISTIC_REGRESSION_PATH: Path = Field(default=None)
-    TFIDF_VECTORIZER_PATH: Path = Field(default=None)
-    TOKENIZER_PATH: Path = Field(default=None)
-    LSTM_MODEL_PATH: Path = Field(default=None)
-    BILSTM_MODEL_PATH: Path = Field(default=None)
-    CNN_MODEL_PATH: Path = Field(default=None)
-    DISTILBERT_MODEL_PATH: Path = Field(default=None)
-    DISTILBERT_TOKENIZER_PATH: Path = Field(default=None)
-    MODEL_COMPARISON_PATH: Path = Field(default=None)
+    LOGISTIC_REGRESSION_PATH: Optional[Path] = Field(default=None)
+    TFIDF_VECTORIZER_PATH: Optional[Path] = Field(default=None)
+    TOKENIZER_PATH: Optional[Path] = Field(default=None)
+    LSTM_MODEL_PATH: Optional[Path] = Field(default=None)
+    BILSTM_MODEL_PATH: Optional[Path] = Field(default=None)
+    CNN_MODEL_PATH: Optional[Path] = Field(default=None)
+    DISTILBERT_MODEL_PATH: Optional[Path] = Field(default=None)
+    DISTILBERT_TOKENIZER_PATH: Optional[Path] = Field(default=None)
+    MODEL_COMPARISON_PATH: Optional[Path] = Field(default=None)
 
     # ── Sentiment mapping ─────────────────────────────────────
     SENTIMENT_MAP: Dict[int, str] = {

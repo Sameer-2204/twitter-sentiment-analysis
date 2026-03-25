@@ -43,11 +43,11 @@ const SENT_COLORS: Record<Sentiment, string> = {
 };
 
 const MODELS = [
+  { value: "logistic_regression", label: "Logistic Regression" },
   { value: "distilbert", label: "DistilBERT" },
   { value: "cnn", label: "CNN" },
   { value: "bilstm", label: "BiLSTM" },
   { value: "lstm", label: "LSTM" },
-  { value: "logistic_regression", label: "Logistic Regression" },
 ];
 
 const HISTORY_KEY = "predictionHistory";
@@ -120,7 +120,7 @@ const Spinner = () => (
 
 const Predict: React.FC = () => {
   const [text, setText] = useState("");
-  const [model, setModel] = useState("distilbert");
+  const [model, setModel] = useState("logistic_regression");
   const [validationError, setValidationError] = useState(false);
 
   const [singleLoading, setSingleLoading] = useState(false);
