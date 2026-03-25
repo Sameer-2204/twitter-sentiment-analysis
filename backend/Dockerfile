@@ -24,7 +24,6 @@ RUN python -c "import nltk; \
 
 # ── Copy application ─────────────────────────────────────────
 COPY app/ app/
-COPY scripts/ scripts/
 COPY data/ data/
 COPY models/ models/
 COPY reports/ reports/
