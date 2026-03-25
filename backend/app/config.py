@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List, Dict
 
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, field_validator
 
 
 class Settings(BaseSettings):
@@ -25,6 +25,14 @@ class Settings(BaseSettings):
         "https://*.vercel.app",
         "http://localhost:*",
     ]
+
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_origins(cls, v):
+        """Accept comma-separated string or JSON list."""
+        if isinstance(v, str):
+            return [o.strip() for o in v.split(",") if o.strip()]
+        return v
 
     # ── Paths ─────────────────────────────────────────────────
     BASE_DIR: Path = Path(__file__).resolve().parent.parent  # backend/
