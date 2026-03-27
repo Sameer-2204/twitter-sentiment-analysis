@@ -1,180 +1,119 @@
 # Twitter Sentiment Analysis API
 
-REST API for Twitter sentiment analysis using 5 ML/DL models. Powers the React dashboard with real-time prediction, EDA analytics, and model comparison.
+FastAPI service for sentiment analysis with 5 models:
+- Logistic Regression + TF-IDF
+- LSTM
+- BiLSTM
+- CNN
+- DistilBERT
 
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | FastAPI + Uvicorn |
-| Traditional ML | scikit-learn (Logistic Regression + TF-IDF) |
-| Deep Learning | TensorFlow (LSTM, BiLSTM, CNN) |
-| Transformer | PyTorch + HuggingFace Transformers (DistilBERT) |
-| Data | pandas, NumPy |
-| Config | Pydantic Settings |
-| Deployment | Docker, Render |
-
-## Setup
+## Local setup
 
 ```bash
-# 1. Create virtual environment
 python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # macOS/Linux
-
-# 2. Install dependencies
+.venv\Scripts\activate
 pip install -r requirements.txt
-
-# 3. Set up environment
-cp .env.example .env
-# Edit .env with your settings
-
-# 4. Ensure data and models exist
-# Place train_data.csv in data/
-# Place all model files in models/
-
-# 5. Run development server
 uvicorn app.main:app --reload --port 8000
 ```
 
-## API Documentation
+Docs:
+- `http://localhost:8000/docs`
+- `http://localhost:8000/redoc`
 
-Interactive Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+## Deployment on Hugging Face Spaces (Free, recommended)
 
-ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+Hugging Face Spaces free CPU hardware is typically enough to keep all 5 models available.
 
-## Endpoints
+1. Create a new Space with `Docker` SDK.
+2. Push this repo to the Space.
+3. The root `Dockerfile` is already configured for Spaces:
+   - `DEPLOYMENT_TARGET=hf`
+   - `LIGHTWEIGHT_MODE=false`
+   - `LAZY_LOADING=false`
+4. Set Space variables:
+   - `ALLOWED_ORIGINS=https://twitter-sentiment-analysis-mocha.vercel.app,http://localhost:5173`
+   - `DEBUG=false`
 
-### Health
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/health` | Service health & readiness |
-| GET | `/api/cors-test` | CORS configuration debug |
+Detailed guide: `backend/HF_SPACES.md`
 
-### Dashboard
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/dashboard/stats` | Aggregate statistics |
-| GET | `/api/dashboard/recent-tweets` | Paginated tweet list |
-| GET | `/api/dashboard/sentiment-trend` | Sentiment trend over batches |
+## Deployment on Render
 
-### EDA
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/eda/class-distribution` | Sentiment class counts |
-| GET | `/api/eda/word-frequency` | Top words by frequency |
-| GET | `/api/eda/bigrams` | Top bigrams |
-| GET | `/api/eda/trigrams` | Top trigrams |
-| GET | `/api/eda/tweet-lengths` | Length distribution stats |
-| GET | `/api/eda/wordcloud-data` | Word→count map for wordcloud |
-| GET | `/api/eda/hashtags` | Top hashtags |
-| GET | `/api/eda/mentions` | Top @mentions |
+### Recommended: parallel rollout from GHCR image
 
-### Models
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/models/comparison` | All 5 models compared |
-| GET | `/api/models/confusion-matrix/{name}` | Confusion matrix |
-| GET | `/api/models/training-history/{name}` | Training curves (DL only) |
-| GET | `/api/models/available` | Currently loaded models |
+This is the safest path when model artefacts are local and large.
 
-### Prediction
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/predict/` | Single text prediction |
-| POST | `/api/predict/all` | All-models comparison |
-| POST | `/api/predict/batch` | CSV batch prediction |
-| GET | `/api/predict/sample-csv` | Download sample CSV |
+1. Build and push image:
 
-## Project Structure
-
-```
-backend/
-├── app/
-│   ├── __init__.py
-│   ├── main.py              # FastAPI app, CORS, startup/shutdown
-│   ├── config.py            # Pydantic BaseSettings
-│   ├── dependencies.py      # DI functions for Depends()
-│   ├── middleware/
-│   │   └── rate_limiter.py  # Per-IP rate limiting (30 req/min)
-│   ├── schemas/
-│   │   ├── prediction.py    # Request/response models
-│   │   ├── dashboard.py
-│   │   ├── eda.py
-│   │   └── models.py
-│   ├── services/
-│   │   ├── text_preprocessor.py  # Lightweight text cleaner
-│   │   ├── data_service.py       # Dataset loading & stats
-│   │   ├── eda_service.py        # Word freq, n-grams, etc.
-│   │   ├── model_service.py      # Comparison, confusion, history
-│   │   └── predictor.py          # ML inference engine
-│   └── routes/
-│       ├── dashboard.py
-│       ├── eda.py
-│       ├── models.py
-│       └── predict.py
-├── scripts/
-│   ├── check_deployment.py  # Pre-deploy readiness checker
-│   └── test_api.py          # Smoke-test all endpoints
-├── requirements.txt
-├── Dockerfile
-├── render.yaml
-├── .env.example
-└── .gitignore
+```bash
+docker build -f backend/Dockerfile -t ghcr.io/sameer-2204/twitter-sentiment-api:latest .
+docker push ghcr.io/sameer-2204/twitter-sentiment-api:latest
 ```
 
-## Deployment (Render)
+2. In Render:
+- New Web Service -> Existing Image
+- Image: `ghcr.io/sameer-2204/twitter-sentiment-api:latest`
+- Plan: free
 
-### Option 1 — Deploy via Dashboard
-
-1. Go to [render.com](https://render.com) → Sign in with GitHub
-2. Click **New +** → **Web Service**
-3. Connect your `twitter-sentiment-analysis` repository
-4. Configure:
-   - **Root Directory:** `backend`
-   - **Runtime:** Docker
-   - **Instance Type:** Free
-5. Add environment variables:
+3. Configure env vars:
 
 | Variable | Value |
-|----------|-------|
-| `LIGHTWEIGHT_MODE` | `false` |
+|---|---|
+| `LIGHTWEIGHT_MODE` | `true` |
 | `LAZY_LOADING` | `true` |
-| `ALLOWED_ORIGINS` | `https://your-frontend.vercel.app` |
+| `ALLOWED_ORIGINS` | `https://twitter-sentiment-analysis-mocha.vercel.app,http://localhost:5173` |
+| `DEBUG` | `false` |
 
-6. Click **Deploy Web Service**
+4. Keep the old Render service running during verification for rollback.
 
-### Option 2 — Deploy via Blueprint
+### Alternative: blueprint deploy (repo-based)
 
-1. Push the repo with `render.yaml` in `backend/`
-2. Go to Render Dashboard → **New +** → **Blueprint**
-3. Select the repository — Render reads `render.yaml` automatically
+If all required data/models are available in build context:
+- keep root `render.yaml`
+- deploy via Render Blueprint
 
-### After Deployment
+## Validation before frontend cutover
 
-Your API will be available at:
+Run the rollout validator against the backend URL:
+
+```bash
+cd backend
+python scripts/validate_rollout.py --base-url https://your-new-service.onrender.com
+# optional free-tier cold-start check
+python scripts/validate_rollout.py --base-url https://your-new-service.onrender.com --idle-seconds 960
+# Hugging Face full-mode profile
+python scripts/validate_rollout.py --base-url https://your-space.hf.space --mode hf-full
 ```
-https://twitter-sentiment-api-xxxx.onrender.com
-```
 
-- Swagger UI: `https://your-url.onrender.com/docs`
-- Health check: `https://your-url.onrender.com/api/health`
+It verifies:
+- `/api/health` and `/docs`
+- CORS against frontend origin
+- single prediction for each model
+- `/api/predict/all` includes all 5 models
+- repeated stability rounds
 
-> **Note:** Render free tier spins down after 15 min of inactivity. First request after idle takes ~30-50s (cold start).
+## Frontend cutover (Vercel)
 
-## Memory & Performance
+After validator passes:
+1. Set `VITE_API_BASE` to new backend URL in Vercel project settings
+2. Redeploy production
+3. Smoke test dashboard + predict pages
 
-- **LIGHTWEIGHT_MODE=false**: All 5 models available. LR loads at startup, heavy models lazy-load on first request.
-- **LAZY_LOADING=true**: Only one heavy model kept in RAM at a time. Previous heavy model unloaded automatically.
-- **Rate limiting**: 30 predictions/minute per IP on prediction endpoints.
-- **Cache headers**: Dashboard (5 min), EDA (10 min), Models (1 hr), Predictions (no-cache).
+## Runtime behavior
+
+- `DEPLOYMENT_TARGET=auto` (default): auto-detects runtime and picks defaults
+- Render-like target: `LIGHTWEIGHT_MODE=true`, `LAZY_LOADING=true`
+- Hugging Face target: `LIGHTWEIGHT_MODE=false`, `LAZY_LOADING=false`
+- You can always override via environment variables.
 
 ## Scripts
 
 ```bash
-# Check deployment readiness
+# preflight checks
 python scripts/check_deployment.py
 
-# Test all API endpoints (server must be running)
+# local endpoint smoke test
 python scripts/test_api.py
+
+# live rollout validation
+python scripts/validate_rollout.py --base-url https://your-new-service.onrender.com
 ```

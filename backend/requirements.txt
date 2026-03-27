@@ -5,13 +5,14 @@ pydantic==2.5.3
 pydantic-settings==2.1.0
 pandas==2.1.4
 numpy==1.26.3
-scikit-learn==1.3.2
+scikit-learn==1.8.0
 python-dotenv==1.0.0
 nltk==3.8.1
 
 # ── Deep Learning (all models) ───────────────────────────────
-# TensorFlow CPU — LSTM, BiLSTM, CNN (~1.8 GB)
-tensorflow-cpu==2.15.0
+# TensorFlow CPU — LSTM, BiLSTM, CNN
+# Use same major runtime that successfully deserializes local Keras 3 artefacts.
+tensorflow-cpu==2.21.0
 
 # PyTorch CPU — DistilBERT (~800 MB with CPU-only)
 --extra-index-url https://download.pytorch.org/whl/cpu

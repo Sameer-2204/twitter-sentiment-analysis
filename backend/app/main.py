@@ -182,11 +182,21 @@ async def shutdown_event():
 @app.get("/api/health", tags=["Health"])
 def health_check():
     """Return service health and readiness status."""
+    available_models = predictor.get_available_models()
+    expected_model_count = (
+        len(settings.MODEL_NAMES)
+        if (not settings.LIGHTWEIGHT_MODE and not settings.LAZY_LOADING)
+        else 1
+    )
+    models_ready = len(available_models) >= expected_model_count
+    ready = data_service.loaded and models_ready
     return {
-        "status": "ok",
+        "status": "ok" if ready else "degraded",
+        "ready": ready,
         "data_loaded": data_service.loaded,
-        "models_loaded": predictor.loaded,
-        "available_models": predictor.get_available_models(),
+        "models_loaded": models_ready,
+        "available_models": available_models,
+        "expected_model_count": expected_model_count,
         "lightweight_mode": settings.LIGHTWEIGHT_MODE,
         "lazy_loading": settings.LAZY_LOADING,
         "version": settings.VERSION,

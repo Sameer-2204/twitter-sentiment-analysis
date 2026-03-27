@@ -55,6 +55,7 @@ class SentimentPredictor:
         self.tfidf: Any = None
         self.keras_tokenizer: Any = None
         self.bert_tokenizer: Any = None
+        self.load_errors: Dict[str, str] = {}
         self.preprocessor: TextPreprocessor = TextPreprocessor()
         self.loaded: bool = False
         self.load_times: Dict[str, float] = {}
@@ -104,7 +105,7 @@ class SentimentPredictor:
                 tokenizer_path=settings.DISTILBERT_TOKENIZER_PATH,
             )
 
-        self.loaded = True
+        self.loaded = bool(self.models)
         total_elapsed = time.time() - total_start
 
         loaded = list(self.models.keys())
@@ -146,6 +147,12 @@ class SentimentPredictor:
                 logger.info("Unloading '%s' to free RAM for '%s'.", prev, model_name)
                 del self.models[prev]
                 self._current_heavy_model = None
+                if prev in {"lstm", "bilstm", "cnn"}:
+                    try:
+                        import tensorflow as tf
+                        tf.keras.backend.clear_session()
+                    except Exception:
+                        pass
                 gc.collect()
                 try:
                     import torch
@@ -156,6 +163,11 @@ class SentimentPredictor:
 
         # Load the requested model
         self._load_single_model(model_name)
+        if model_name not in self.models:
+            reason = self.load_errors.get(model_name, "unknown loading error")
+            raise ValueError(
+                f"Model '{model_name}' could not be loaded. Reason: {reason}"
+            )
 
         if model_name in _HEAVY_MODELS:
             self._current_heavy_model = model_name
@@ -172,7 +184,7 @@ class SentimentPredictor:
             if find_spec("tensorflow") is None:
                 raise ValueError(
                     f"Model '{model_name}' requires TensorFlow, which is not installed "
-                    "in this Railway deployment."
+                    "in this runtime."
                 )
             # Ensure Keras tokenizer is loaded (shared)
             if self.keras_tokenizer is None:
@@ -188,7 +200,7 @@ class SentimentPredictor:
             if find_spec("torch") is None or find_spec("transformers") is None:
                 raise ValueError(
                     "Model 'distilbert' requires PyTorch and Transformers, which are "
-                    "not installed in this Railway deployment."
+                    "not installed in this runtime."
                 )
             self._load_distilbert(
                 model_path=settings.DISTILBERT_MODEL_PATH,
@@ -284,12 +296,14 @@ class SentimentPredictor:
         settings = get_settings()
         results: List[PredictionResponse] = []
 
-        # In lightweight mode, only run models that are already loaded
-        models_to_run = (
-            list(self.models.keys())
-            if settings.LIGHTWEIGHT_MODE
-            else settings.MODEL_NAMES
-        )
+        # With lazy loading enabled, we can run every model sequentially
+        # without keeping them all resident in memory at once.
+        if settings.LAZY_LOADING:
+            models_to_run = settings.MODEL_NAMES
+        elif settings.LIGHTWEIGHT_MODE:
+            models_to_run = list(self.models.keys())
+        else:
+            models_to_run = settings.MODEL_NAMES
 
         for model_name in models_to_run:
             try:
@@ -377,6 +391,7 @@ class SentimentPredictor:
     def _load_pickle_model(self, name: str, path: Path) -> None:
         if not path.exists():
             logger.warning("Skipping %s — file not found: %s", name, path)
+            self.load_errors[name] = f"file not found at {path}"
             return
         start = time.time()
         try:
@@ -384,8 +399,10 @@ class SentimentPredictor:
                 self.models[name] = pickle.load(f)
             elapsed = time.time() - start
             self.load_times[name] = elapsed
+            self.load_errors.pop(name, None)
             logger.info("Loaded %s in %.2f s", name, elapsed)
         except Exception as exc:
+            self.load_errors[name] = str(exc)
             logger.error("Failed to load %s: %s", name, exc)
 
     def _load_tfidf(self, path: Path) -> None:
@@ -393,6 +410,7 @@ class SentimentPredictor:
             return
         if not path.exists():
             logger.warning("TF-IDF vectoriser not found: %s", path)
+            self.load_errors["tfidf"] = f"file not found at {path}"
             return
         start = time.time()
         try:
@@ -400,8 +418,10 @@ class SentimentPredictor:
                 self.tfidf = pickle.load(f)
             elapsed = time.time() - start
             self.load_times["tfidf"] = elapsed
+            self.load_errors.pop("tfidf", None)
             logger.info("Loaded TF-IDF vectoriser in %.2f s", elapsed)
         except Exception as exc:
+            self.load_errors["tfidf"] = str(exc)
             logger.error("Failed to load TF-IDF: %s", exc)
 
     def _load_keras_tokenizer(self, path: Path) -> None:
@@ -409,6 +429,7 @@ class SentimentPredictor:
             return
         if not path.exists():
             logger.warning("Keras tokenizer not found: %s", path)
+            self.load_errors["keras_tokenizer"] = f"file not found at {path}"
             return
         start = time.time()
         try:
@@ -416,31 +437,42 @@ class SentimentPredictor:
                 self.keras_tokenizer = pickle.load(f)
             elapsed = time.time() - start
             self.load_times["keras_tokenizer"] = elapsed
+            self.load_errors.pop("keras_tokenizer", None)
             logger.info("Loaded Keras tokenizer in %.2f s", elapsed)
         except Exception as exc:
+            self.load_errors["keras_tokenizer"] = str(exc)
             logger.error("Failed to load Keras tokenizer: %s", exc)
 
     def _load_keras_model(self, name: str, path: Path) -> None:
         if not path.exists():
             logger.warning("Skipping %s — file not found: %s", name, path)
+            self.load_errors[name] = f"file not found at {path}"
             return
         start = time.time()
         try:
             import tensorflow as tf
             tf.get_logger().setLevel("ERROR")
-            self.models[name] = tf.keras.models.load_model(str(path))
+            try:
+                # Inference-only loading is more compatible with training artefacts.
+                self.models[name] = tf.keras.models.load_model(str(path), compile=False)
+            except Exception:
+                self.models[name] = tf.keras.models.load_model(str(path))
             elapsed = time.time() - start
             self.load_times[name] = elapsed
+            self.load_errors.pop(name, None)
             logger.info("Loaded %s in %.2f s", name, elapsed)
         except Exception as exc:
+            self.load_errors[name] = str(exc)
             logger.error("Failed to load Keras model %s: %s", name, exc)
 
     def _load_distilbert(self, model_path: Path, tokenizer_path: Path) -> None:
         if not model_path.exists():
             logger.warning("DistilBERT model dir not found: %s", model_path)
+            self.load_errors["distilbert"] = f"model dir not found at {model_path}"
             return
         if not tokenizer_path.exists():
             logger.warning("DistilBERT tokenizer dir not found: %s", tokenizer_path)
+            self.load_errors["distilbert"] = f"tokenizer dir not found at {tokenizer_path}"
             return
         start = time.time()
         try:
@@ -449,15 +481,37 @@ class SentimentPredictor:
                 DistilBertForSequenceClassification,
                 DistilBertTokenizer,
             )
-            self.bert_tokenizer = DistilBertTokenizer.from_pretrained(str(tokenizer_path))
-            model = DistilBertForSequenceClassification.from_pretrained(str(model_path))
+            torch.set_num_threads(1)
+            try:
+                torch.set_num_interop_threads(1)
+            except Exception:
+                pass
+            self.bert_tokenizer = DistilBertTokenizer.from_pretrained(
+                str(tokenizer_path),
+                local_files_only=True,
+            )
+            model = DistilBertForSequenceClassification.from_pretrained(
+                str(model_path),
+                local_files_only=True,
+            )
+            if self.device == "cpu":
+                try:
+                    model = torch.quantization.quantize_dynamic(
+                        model,
+                        {torch.nn.Linear},
+                        dtype=torch.qint8,
+                    )
+                except Exception as quant_exc:
+                    logger.warning("DistilBERT quantization skipped: %s", quant_exc)
             model.to(self.device)
             model.eval()
             self.models["distilbert"] = model
             elapsed = time.time() - start
             self.load_times["distilbert"] = elapsed
+            self.load_errors.pop("distilbert", None)
             logger.info("Loaded DistilBERT in %.2f s (device=%s)", elapsed, self.device)
         except Exception as exc:
+            self.load_errors["distilbert"] = str(exc)
             logger.error("Failed to load DistilBERT: %s", exc)
 
     # ──────────────────────────────────────────────────────────
@@ -466,6 +520,43 @@ class SentimentPredictor:
 
     def _predict_logistic(self, cleaned_text: str) -> tuple[np.ndarray, int]:
         model = self.models["logistic_regression"]
+        if hasattr(model, "named_steps"):
+            clf = model.named_steps.get("clf")
+            pipeline_tfidf = model.named_steps.get("tfidf")
+
+            # Try both vectorizers in order. In some deployments, one
+            # deserializes without throwing but is not actually usable.
+            if clf is not None:
+                vectorizer_candidates = [
+                    ("shared_tfidf", self.tfidf),
+                    ("pipeline_tfidf", pipeline_tfidf),
+                ]
+                for candidate_name, candidate in vectorizer_candidates:
+                    if not self._is_tfidf_fitted(candidate):
+                        continue
+                    try:
+                        features = candidate.transform([cleaned_text])
+                        prediction = int(clf.predict(features)[0])
+                        probabilities = clf.predict_proba(features)[0]
+                        return probabilities, prediction
+                    except Exception as exc:
+                        logger.warning(
+                            "Logistic vectorizer '%s' failed at inference: %s",
+                            candidate_name,
+                            exc,
+                        )
+
+            # Last fallback for unusual pipeline variants.
+            try:
+                prediction = int(model.predict([cleaned_text])[0])
+                probabilities = model.predict_proba([cleaned_text])[0]
+                return probabilities, prediction
+            except Exception as exc:
+                raise RuntimeError(
+                    "Logistic regression artifacts are loaded but inference failed. "
+                    "Please verify TF-IDF/vectorizer compatibility in this deployment."
+                ) from exc
+
         if self.tfidf is None:
             raise RuntimeError("TF-IDF vectoriser not loaded.")
         features = self.tfidf.transform([cleaned_text])
@@ -508,6 +599,10 @@ class SentimentPredictor:
     # ──────────────────────────────────────────────────────────
     #  Helpers
     # ──────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _is_tfidf_fitted(vectorizer: Any) -> bool:
+        return vectorizer is not None and hasattr(vectorizer, "idf_")
 
     @staticmethod
     def _build_probability_dict(

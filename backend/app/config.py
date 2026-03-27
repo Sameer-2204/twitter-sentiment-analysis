@@ -7,6 +7,7 @@ Uses ``functools.lru_cache`` so the settings object is created only once.
 from __future__ import annotations
 
 from functools import lru_cache
+import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -72,8 +73,10 @@ class Settings(BaseSettings):
     ]
 
     # ── Deployment / Resource management ──────────────────────
-    LIGHTWEIGHT_MODE: bool = True  # Only load LR on Railway free tier
-    LAZY_LOADING: bool = True      # Load heavy models on first request
+    DEPLOYMENT_TARGET: str = "auto"  # auto | render | hf
+    SPACE_ID: Optional[str] = None   # Set automatically on Hugging Face Spaces
+    LIGHTWEIGHT_MODE: Optional[bool] = None
+    LAZY_LOADING: Optional[bool] = None
 
     # ── Rate limiting ─────────────────────────────────────────
     RATE_LIMIT_MAX_REQUESTS: int = 30
@@ -85,6 +88,19 @@ class Settings(BaseSettings):
 
     def model_post_init(self, __context) -> None:
         """Resolve default paths relative to BASE_DIR after init."""
+        is_hf_space = bool(self.SPACE_ID or os.getenv("SPACE_ID"))
+        target = (self.DEPLOYMENT_TARGET or "auto").strip().lower()
+        if target == "auto":
+            target = "hf" if is_hf_space else "render"
+
+        # Deployment-aware defaults:
+        # - Render free: lightweight + lazy-loading (fits 512MB)
+        # - HF Spaces free CPU: full preload (enough RAM for all 5 models)
+        if self.LIGHTWEIGHT_MODE is None:
+            self.LIGHTWEIGHT_MODE = target != "hf"
+        if self.LAZY_LOADING is None:
+            self.LAZY_LOADING = target == "render"
+
         project_root = self.BASE_DIR.parent  # twitter_analysis/
 
         def resolve_shared_dir(name: str) -> Path:
