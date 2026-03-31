@@ -99,16 +99,6 @@ def predict_single(request: PredictionRequest, req: Request):
             ),
         )
 
-    # Check if model is actually loaded
-    if not predictor.is_model_available(request.model_name):
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                f"Model '{request.model_name}' is not loaded. "
-                f"Available: {predictor.get_available_models()}"
-            ),
-        )
-
     start = time.time()
     try:
         result = predictor.predict(request.text, request.model_name)

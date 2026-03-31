@@ -39,6 +39,47 @@ function formatError(err: unknown, context: string): null {
   return null;
 }
 
+export function getApiErrorMessage(
+  err: unknown,
+  fallback = "Request failed."
+): string {
+  if (err instanceof AxiosError) {
+    if (err.code === "ERR_NETWORK" || err.message === "Network Error") {
+      return `Backend unreachable at ${API_BASE}.`;
+    }
+
+    const detail = err.response?.data?.detail;
+    if (typeof detail === "string" && detail.trim()) {
+      return detail;
+    }
+
+    if (Array.isArray(detail)) {
+      const message = detail
+        .map((item) => {
+          const msg =
+            typeof item === "string"
+              ? item
+              : typeof item?.msg === "string"
+                ? item.msg
+                : "";
+          return msg.trim();
+        })
+        .filter(Boolean)
+        .join(", ");
+
+      if (message) return message;
+    }
+
+    if (err.response) {
+      return `HTTP ${err.response.status} ${err.response.statusText}`.trim();
+    }
+
+    if (err.message) return err.message;
+  }
+
+  return fallback;
+}
+
 /* ── Connection test ────────────────────────────────────────── */
 
 export async function testConnection(): Promise<{
@@ -222,22 +263,14 @@ export async function fetchTrainingHistory(modelName: string) {
 /* ── Predict ──────────────────────────────────────────────────── */
 
 export async function predictSentiment(text: string, model?: string) {
-  try {
-    const body = model ? { text, model_name: model } : { text };
-    const { data } = await api.post("/api/predict/", body);
-    return data;
-  } catch (err) {
-    return formatError(err, "predictSentiment");
-  }
+  const body = model ? { text, model_name: model } : { text };
+  const { data } = await api.post("/api/predict/", body);
+  return data;
 }
 
 export async function predictAllModels(text: string) {
-  try {
-    const { data } = await api.post("/api/predict/all", { text });
-    return data;
-  } catch (err) {
-    return formatError(err, "predictAllModels");
-  }
+  const { data } = await api.post("/api/predict/all", { text });
+  return data;
 }
 
 export async function predictBatch(formData: FormData, modelName?: string) {

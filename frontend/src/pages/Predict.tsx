@@ -12,7 +12,11 @@ import {
   GlassCard,
   SentimentBadge,
 } from "../components/common";
-import { predictSentiment, predictAllModels } from "../lib/api";
+import {
+  getApiErrorMessage,
+  predictSentiment,
+  predictAllModels,
+} from "../lib/api";
 import "./Predict.css";
 
 
@@ -151,12 +155,13 @@ const Predict: React.FC = () => {
     if (!text.trim()) { setValidationError(true); return; }
     setValidationError(false);
     setSingleLoading(true); setSingleError(null); setSingleResult(null); setAllResults(null);
-    const res = await predictSentiment(text, model);
-    if (!res) setSingleError("Prediction failed. Check your connection.");
-    else {
+    try {
+      const res = await predictSentiment(text, model);
       const result = normSingle(res, MODELS.find(m => m.value === model)?.label ?? model);
       setSingleResult(result);
       addToHistory({ text: text.trim(), model: result.model, sentiment: result.sentiment, confidence: result.confidence });
+    } catch (err) {
+      setSingleError(getApiErrorMessage(err, "Prediction failed."));
     }
     setSingleLoading(false);
   };
@@ -166,15 +171,16 @@ const Predict: React.FC = () => {
     if (!text.trim()) { setValidationError(true); return; }
     setValidationError(false);
     setAllLoading(true); setAllError(null); setAllResults(null); setSingleResult(null);
-    const res = await predictAllModels(text);
-    if (!res) setAllError("Comparison failed. Check your connection.");
-    else {
+    try {
+      const res = await predictAllModels(text);
       const results = normAllModels(res);
       setAllResults(results);
       if (results.length) {
         const best = results.reduce((a, b) => b.confidence > a.confidence ? b : a, results[0]);
         addToHistory({ text: text.trim(), model: "All Models", sentiment: best.sentiment, confidence: best.confidence });
       }
+    } catch (err) {
+      setAllError(getApiErrorMessage(err, "Comparison failed."));
     }
     setAllLoading(false);
   };

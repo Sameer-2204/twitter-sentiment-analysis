@@ -230,7 +230,6 @@ class SentimentPredictor:
             future_to_model = {
                 executor.submit(self.predict, text, name): name
                 for name in models_to_run
-                if self.is_model_available(name)
             }
             for future in as_completed(future_to_model):
                 model_name = future_to_model[future]
