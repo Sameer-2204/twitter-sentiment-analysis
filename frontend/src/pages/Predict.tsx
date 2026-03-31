@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Plot from "react-plotly.js";
+import PlotImport from "react-plotly.js";
+
+// Handle ESM / CJS default export mismatch
+const PlotComponent =
+  typeof (PlotImport as any).default === "function"
+    ? (PlotImport as any).default
+    : PlotImport;
+const AnimatedPlot = PlotComponent as React.ComponentType<any>;
 import {
   GlassCard,
   SentimentBadge,
@@ -8,7 +15,6 @@ import {
 import { predictSentiment, predictAllModels } from "../lib/api";
 import "./Predict.css";
 
-const AnimatedPlot = Plot as unknown as React.ComponentType<any>;
 
 /* ── Types ────────────────────────────────────────────────────── */
 
@@ -90,7 +96,7 @@ const normAllModels = (raw: unknown): ModelResult[] => {
   return items.map((item) => {
     const o = (item as Record<string, unknown>) ?? {};
     return {
-      model: String(o.model ?? o.model_name ?? o.name ?? ""),
+      model: String(o.model ?? o.model_used ?? o.model_name ?? o.name ?? ""),
       sentiment: normSentiment(o.sentiment ?? o.label ?? o.prediction),
       confidence: pct(o.confidence ?? o.score ?? o.probability),
     };

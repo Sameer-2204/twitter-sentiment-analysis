@@ -27,36 +27,6 @@ from app.schemas.eda import ClassDistribution
 
 logger = logging.getLogger(__name__)
 
-# ── Sentiment label mapping ───────────────────────────────────
-# The dataset uses numeric labels 0-19 (topic categories).  For the
-# sentiment dashboard we map them into three broad buckets.
-#   Positive  ≈ labels that tend to carry bullish / upbeat text
-#   Negative  ≈ labels that tend to carry bearish / downbeat text
-#   Neutral   ≈ the rest (informational / factual)
-# This is a *simplification*; the exact mapping can be tuned later.
-_LABEL_TO_SENTIMENT: Dict[int, str] = {
-    0: "Neutral",    # Analyst Update
-    1: "Neutral",    # Fed | Central Banks
-    2: "Neutral",    # Company | Product News
-    3: "Negative",   # Downgrades / Warnings
-    4: "Positive",   # Dividend
-    5: "Positive",   # Earnings
-    6: "Negative",   # Price Down
-    7: "Positive",   # Price Up / Guidance
-    8: "Neutral",    # Macro / Currency
-    9: "Neutral",    # Markets
-    10: "Neutral",   # Gold / Commodities
-    11: "Neutral",   # Energy
-    12: "Neutral",   # Legal / Regulation
-    13: "Neutral",   # Mergers & Acquisitions
-    14: "Neutral",   # Analyst Ratings
-    15: "Neutral",   # Upgrades
-    16: "Neutral",   # Politics / Govt
-    17: "Neutral",   # Personnel / Exec
-    18: "Neutral",   # General Finance
-    19: "Negative",  # Stock Specific Negative
-}
-
 
 class DataService:
     """Singleton service for loading, caching, and querying the dataset.
@@ -104,15 +74,75 @@ class DataService:
         # Drop rows with empty text
         self.df = self.df.dropna(subset=["text"]).reset_index(drop=True)
 
-        # Map numeric label → sentiment string
-        self.df["sentiment"] = self.df["label"].map(_LABEL_TO_SENTIMENT).fillna("Neutral")
-
-        # Derived columns
+        # Derived columns (sentiment will be filled by enrich_with_predictions)
+        self.df["sentiment"] = "Neutral"  # placeholder until model predicts
         self.df["text_length"] = self.df["text"].astype(str).str.len()
         self.df["word_count"] = self.df["text"].astype(str).str.split().str.len()
 
         self.loaded = True
-        logger.info("Data enrichment complete – %d rows ready.", len(self.df))
+        logger.info("Data loaded – %d rows ready (sentiment pending model prediction).", len(self.df))
+
+    def enrich_with_predictions(self, predictor_instance=None) -> None:
+        """Use VADER sentiment analyzer to classify all tweets.
+
+        VADER (Valence Aware Dictionary and sEntiment Reasoner) is a
+        lexicon-based analyzer specifically designed for social media
+        text.  It handles slang, emojis, capitalization, and negation
+        correctly, producing much more accurate results than the topic-
+        classifier LR model.
+
+        The ``predictor_instance`` argument is kept for API compat but
+        VADER is used regardless.
+        """
+        if not self.loaded or self.df is None:
+            logger.warning("Cannot enrich — data not loaded yet.")
+            return
+
+        import time as _time
+        start = _time.time()
+
+        try:
+            from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+        except ImportError:
+            logger.error(
+                "vaderSentiment not installed — run: pip install vaderSentiment"
+            )
+            return
+
+        analyzer = SentimentIntensityAnalyzer()
+        texts = self.df["text"].astype(str).tolist()
+
+        sentiments = []
+        confidences = []
+        for text in texts:
+            scores = analyzer.polarity_scores(text)
+            compound = scores["compound"]
+            # Standard VADER thresholds
+            if compound >= 0.05:
+                sentiments.append("Positive")
+            elif compound <= -0.05:
+                sentiments.append("Negative")
+            else:
+                sentiments.append("Neutral")
+            confidences.append(abs(compound))
+
+        self.df["sentiment"] = sentiments
+        self.df["confidence"] = confidences
+
+        # Clear cached stats so they are recomputed with real sentiments
+        self._stats_cache = None
+        self._class_dist_cache = None
+
+        elapsed = _time.time() - start
+        counts = self.df["sentiment"].value_counts()
+        logger.info(
+            "Enriched %d tweets with VADER sentiment in %.2f s — "
+            "Positive: %d, Negative: %d, Neutral: %d",
+            len(self.df), elapsed,
+            int(counts.get("Positive", 0)),
+            int(counts.get("Negative", 0)),
+            int(counts.get("Neutral", 0)),
+        )
 
     # ── Dashboard stats ───────────────────────────────────────
 
@@ -202,6 +232,9 @@ class DataService:
     def get_sentiment_trend(self, batch_size: int = 1000) -> SentimentTrendResponse:
         """Group tweets into sequential batches and count sentiments.
 
+        The underlying CSV is sorted by label, so we shuffle with a
+        fixed seed to produce a representative trend across batches.
+
         Parameters
         ----------
         batch_size : int
@@ -213,10 +246,13 @@ class DataService:
         """
         self._ensure_loaded()
         trend: List[SentimentTrendPoint] = []
-        total = len(self.df)
+
+        # Shuffle deterministically so trend is representative
+        shuffled = self.df.sample(frac=1, random_state=42).reset_index(drop=True)
+        total = len(shuffled)
 
         for i in range(0, total, batch_size):
-            batch = self.df.iloc[i : i + batch_size]
+            batch = shuffled.iloc[i : i + batch_size]
             counts = batch["sentiment"].value_counts()
             trend.append(
                 SentimentTrendPoint(

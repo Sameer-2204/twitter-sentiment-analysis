@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Plot from "react-plotly.js";
+import PlotImport from "react-plotly.js";
 import {
   Bar,
   BarChart,
@@ -29,7 +29,12 @@ import "./EDA.css";
 
 /* ── Types ────────────────────────────────────────────────────── */
 
-const AnimatedPlot = Plot as unknown as React.ComponentType<any>;
+// Handle ESM / CJS default export mismatch
+const PlotComponent =
+  typeof (PlotImport as any).default === "function"
+    ? (PlotImport as any).default
+    : PlotImport;
+const AnimatedPlot = PlotComponent as React.ComponentType<any>;
 
 type SentimentFilter = "all" | "positive" | "negative" | "neutral";
 
@@ -88,6 +93,15 @@ const normBars = (raw: unknown): BarEntry[] => {
 };
 
 const normWords = (raw: unknown): WordEntry[] => {
+  // Handle backend shape: { words: {word: count, ...}, sentiment_filter: "..." }
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const record = raw as Record<string, unknown>;
+    if (record.words && typeof record.words === "object" && !Array.isArray(record.words)) {
+      return Object.entries(record.words as Record<string, unknown>)
+        .map(([word, value]) => ({ word, count: safe(value) }))
+        .filter((e) => e.word && e.count > 0);
+    }
+  }
   const a = arr(raw);
   if (a.length) {
     return a.map((e) => {
@@ -100,9 +114,9 @@ const normWords = (raw: unknown): WordEntry[] => {
     }).filter((e) => e.word);
   }
   if (raw && typeof raw === "object") {
-    return Object.entries(raw as Record<string, unknown>).map(([w, v]) => ({
-      word: w, count: safe(v),
-    }));
+    return Object.entries(raw as Record<string, unknown>)
+      .filter(([k]) => k !== "sentiment_filter")
+      .map(([w, v]) => ({ word: w, count: safe(v) }));
   }
   return [];
 };

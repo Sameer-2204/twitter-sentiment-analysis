@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Plot from "react-plotly.js";
+import PlotImport from "react-plotly.js";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -28,7 +28,12 @@ ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, CJSToolti
 
 /* ── Types ────────────────────────────────────────────────────── */
 
-const AnimatedPlot = Plot as unknown as React.ComponentType<any>;
+// Handle ESM / CJS default export mismatch
+const PlotComponent =
+  typeof (PlotImport as any).default === "function"
+    ? (PlotImport as any).default
+    : PlotImport;
+const AnimatedPlot = PlotComponent as React.ComponentType<any>;
 
 interface ModelRow {
   name: string;

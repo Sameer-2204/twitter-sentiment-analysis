@@ -1,4 +1,5 @@
 import React from "react";
+import { ConnectionStatus } from "../common";
 import "./TopBar.css";
 
 interface TopBarProps {
@@ -39,6 +40,7 @@ const TopBar: React.FC<TopBarProps> = ({
         )}
       </div>
       <div className="topbar__right">
+        <ConnectionStatus />
         <span className="topbar__timestamp caption">
           Last updated: {now}
         </span>

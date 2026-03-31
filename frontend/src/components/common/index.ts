@@ -7,3 +7,4 @@ export { default as CustomCursor } from "./CustomCursor";
 export { default as SmoothLoader } from "./SmoothLoader";
 export { default as ErrorState } from "./ErrorState";
 export { default as EmptyState } from "./EmptyState";
+export { default as ConnectionStatus } from "./ConnectionStatus";

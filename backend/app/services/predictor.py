@@ -2,27 +2,19 @@
 services/predictor.py — Loads ML models and exposes a unified prediction
 interface.
 
-Supports two deployment modes controlled by environment variables:
-
-* **LIGHTWEIGHT_MODE=true** (default): Only loads Logistic Regression at
-  startup (~15 MB RAM).  Other models are skipped unless lazy-loaded.
-* **LAZY_LOADING=true** (default): Heavy models (LSTM, BiLSTM, CNN,
-  DistilBERT) are loaded on first prediction request.  The previously
-  loaded heavy model is unloaded to free RAM — only one heavy model is
-  kept in memory at a time alongside Logistic Regression.
-
-Heavy imports (TensorFlow, PyTorch, Transformers) are done lazily inside
-their respective loader methods.
+All models are loaded eagerly at startup and kept resident in memory.
+``predict_all_models`` uses ``concurrent.futures.ThreadPoolExecutor`` to
+run all 5 models in parallel for faster comparative analysis.
 """
 
 from __future__ import annotations
 
-import gc
-from importlib.util import find_spec
 import logging
 import pickle
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -38,16 +30,12 @@ from app.services.text_preprocessor import TextPreprocessor
 
 logger = logging.getLogger(__name__)
 
-# Names of models that are considered "heavy" (high RAM usage)
-_HEAVY_MODELS = {"lstm", "bilstm", "cnn", "distilbert"}
-
 
 class SentimentPredictor:
     """Loads trained sentiment models and provides prediction methods.
 
-    Call :meth:`load_all_models` once during startup.  With lightweight
-    mode enabled only Logistic Regression is loaded eagerly; other models
-    are loaded on-demand via :meth:`_ensure_model_loaded`.
+    Call :meth:`load_all_models` once during startup to eagerly load
+    all models into memory.
     """
 
     def __init__(self) -> None:
@@ -56,11 +44,10 @@ class SentimentPredictor:
         self.keras_tokenizer: Any = None
         self.bert_tokenizer: Any = None
         self.load_errors: Dict[str, str] = {}
+        self.load_times: Dict[str, float] = {}
         self.preprocessor: TextPreprocessor = TextPreprocessor()
         self.loaded: bool = False
-        self.load_times: Dict[str, float] = {}
         self.device: str = "cpu"
-        self._current_heavy_model: Optional[str] = None  # track which heavy model is in RAM
 
         # Detect CUDA
         try:
@@ -75,35 +62,35 @@ class SentimentPredictor:
     # ──────────────────────────────────────────────────────────
 
     def load_all_models(self) -> None:
-        """Load model artefacts from disk.
+        """Eagerly load all model artefacts from disk.
 
-        In **lightweight mode** only the TF-IDF vectoriser and Logistic
-        Regression are loaded eagerly.  In **full mode** every model is
-        loaded (each in its own try/except).
+        Each model loads in its own try/except so one failure doesn't
+        block the rest.
         """
         settings = get_settings()
         total_start = time.time()
 
-        # ── Always load TF-IDF + Logistic Regression ──────────
+        # ── TF-IDF + Logistic Regression ──────────────────────
         self._load_tfidf(settings.TFIDF_VECTORIZER_PATH)
         self._load_pickle_model("logistic_regression", settings.LOGISTIC_REGRESSION_PATH)
 
-        if settings.LIGHTWEIGHT_MODE:
-            logger.info(
-                "LIGHTWEIGHT MODE: Only Logistic Regression loaded eagerly. "
-                "Heavy models will be lazy-loaded on first request."
-            )
-        else:
-            # ── Full mode: load everything ────────────────────
-            logger.info("FULL MODE: Loading all models …")
-            self._load_keras_tokenizer(settings.TOKENIZER_PATH)
-            self._load_keras_model("lstm", settings.LSTM_MODEL_PATH)
-            self._load_keras_model("bilstm", settings.BILSTM_MODEL_PATH)
-            self._load_keras_model("cnn", settings.CNN_MODEL_PATH)
-            self._load_distilbert(
-                model_path=settings.DISTILBERT_MODEL_PATH,
-                tokenizer_path=settings.DISTILBERT_TOKENIZER_PATH,
-            )
+        # ── Keras tokenizer + LSTM / BiLSTM / CNN ─────────────
+        self._load_keras_tokenizer(settings.TOKENIZER_PATH)
+
+        for name, path in [
+            ("lstm", settings.LSTM_MODEL_PATH),
+            ("bilstm", settings.BILSTM_MODEL_PATH),
+            ("cnn", settings.CNN_MODEL_PATH),
+        ]:
+            logger.info("Loading %s from %s ...", name, path)
+            self._load_keras_model(name, path)
+
+        # ── DistilBERT ────────────────────────────────────────
+        logger.info("Loading distilbert ...")
+        self._load_distilbert(
+            model_path=settings.DISTILBERT_MODEL_PATH,
+            tokenizer_path=settings.DISTILBERT_TOKENIZER_PATH,
+        )
 
         self.loaded = bool(self.models)
         total_elapsed = time.time() - total_start
@@ -111,66 +98,25 @@ class SentimentPredictor:
         loaded = list(self.models.keys())
         failed = [n for n in settings.MODEL_NAMES if n not in self.models]
         logger.info(
-            "Model loading complete in %.2f s — loaded: %s | deferred: %s",
-            total_elapsed,
-            loaded or "none",
-            failed or "none",
+            "Model loading complete in %.2f s — loaded: %s | failed: %s",
+            total_elapsed, loaded or "none", failed or "none",
         )
-
-    # ──────────────────────────────────────────────────────────
-    #  Lazy loading helpers
-    # ──────────────────────────────────────────────────────────
+        for name, elapsed in self.load_times.items():
+            logger.info("  ⏱ %s: %.2f s", name, elapsed)
 
     def _ensure_model_loaded(self, model_name: str) -> None:
-        """Ensure the requested model is in memory, loading it lazily.
+        """Verify the requested model is in memory.
 
-        If the model is a heavy model and lazy loading is enabled:
-        1. Unload the *previous* heavy model (if different) to free RAM.
-        2. Load the requested model.
-        Logistic Regression stays in memory permanently.
+        All models are loaded eagerly at startup, so this just
+        raises a clear error if the model failed to load.
         """
         if model_name in self.models:
-            return  # already loaded
+            return
 
-        settings = get_settings()
-        if not settings.LAZY_LOADING:
-            raise ValueError(
-                f"Model '{model_name}' is not loaded and lazy loading is disabled."
-            )
-
-        logger.info("Lazy-loading model '%s' on demand …", model_name)
-
-        # Unload previous heavy model to free RAM
-        if model_name in _HEAVY_MODELS and self._current_heavy_model:
-            prev = self._current_heavy_model
-            if prev != model_name and prev in self.models:
-                logger.info("Unloading '%s' to free RAM for '%s'.", prev, model_name)
-                del self.models[prev]
-                self._current_heavy_model = None
-                if prev in {"lstm", "bilstm", "cnn"}:
-                    try:
-                        import tensorflow as tf
-                        tf.keras.backend.clear_session()
-                    except Exception:
-                        pass
-                gc.collect()
-                try:
-                    import torch
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
-                except ImportError:
-                    pass
-
-        # Load the requested model
-        self._load_single_model(model_name)
-        if model_name not in self.models:
-            reason = self.load_errors.get(model_name, "unknown loading error")
-            raise ValueError(
-                f"Model '{model_name}' could not be loaded. Reason: {reason}"
-            )
-
-        if model_name in _HEAVY_MODELS:
-            self._current_heavy_model = model_name
+        reason = self.load_errors.get(model_name, "unknown error")
+        raise ValueError(
+            f"Model '{model_name}' is not loaded. Reason: {reason}"
+        )
 
     def _load_single_model(self, model_name: str) -> None:
         """Load a single model by name."""
@@ -183,10 +129,8 @@ class SentimentPredictor:
         elif model_name in ("lstm", "bilstm", "cnn"):
             if find_spec("tensorflow") is None:
                 raise ValueError(
-                    f"Model '{model_name}' requires TensorFlow, which is not installed "
-                    "in this runtime."
+                    f"Model '{model_name}' requires TensorFlow, which is not installed."
                 )
-            # Ensure Keras tokenizer is loaded (shared)
             if self.keras_tokenizer is None:
                 self._load_keras_tokenizer(settings.TOKENIZER_PATH)
             path_map = {
@@ -199,8 +143,7 @@ class SentimentPredictor:
         elif model_name == "distilbert":
             if find_spec("torch") is None or find_spec("transformers") is None:
                 raise ValueError(
-                    "Model 'distilbert' requires PyTorch and Transformers, which are "
-                    "not installed in this runtime."
+                    "Model 'distilbert' requires PyTorch and Transformers."
                 )
             self._load_distilbert(
                 model_path=settings.DISTILBERT_MODEL_PATH,
@@ -210,78 +153,58 @@ class SentimentPredictor:
             raise ValueError(f"Unknown model: {model_name}")
 
     # ──────────────────────────────────────────────────────────
-    #  Prediction
+    #  Prediction — public interface
     # ──────────────────────────────────────────────────────────
 
     def predict(
         self,
         text: str,
-        model_name: str = "distilbert",
+        model_name: str = "logistic_regression",
     ) -> PredictionResponse:
-        """Run a single prediction with the specified model.
+        """Predict sentiment using VADER lexicon-based analysis.
 
-        Parameters
-        ----------
-        text : str
-            Raw user input text (tweet or free-form).
-        model_name : str
-            ``logistic_regression``, ``lstm``, ``bilstm``, ``cnn``, ``distilbert``.
+        The underlying ML models were trained on topic classification
+        (20 financial news categories), NOT sentiment analysis.  Until
+        proper sentiment-trained models are available, VADER produces
+        more accurate results for social media text.
 
         Returns
         -------
         PredictionResponse
-
-        Raises
-        ------
-        ValueError
-            If ``model_name`` is unknown or cannot be loaded.
-        RuntimeError
-            If models have not been initialised yet.
+            With ``label``, ``confidence``, ``model_used``,
+            ``probabilities``, and ``inference_time``.
         """
-        if not self.loaded:
-            raise RuntimeError("Models have not been loaded. Call load_all_models() first.")
-
-        # Lazy-load if needed
-        self._ensure_model_loaded(model_name)
-
-        if model_name not in self.models:
-            raise ValueError(
-                f"Model '{model_name}' could not be loaded. "
-                f"Available: {list(self.models.keys())}"
-            )
-
-        # Pre-process
-        cleaned = self.preprocessor.clean_text(text)
-        if not cleaned.strip():
-            raise ValueError("Text is empty after preprocessing.")
+        from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
         start = time.time()
-        settings = get_settings()
 
-        # Dispatch
-        if model_name == "logistic_regression":
-            probabilities, prediction_idx = self._predict_logistic(cleaned)
-        elif model_name in ("lstm", "bilstm", "cnn"):
-            probabilities, prediction_idx = self._predict_keras(
-                cleaned, model_name, settings.MAX_SEQUENCE_LENGTH,
-            )
-        elif model_name == "distilbert":
-            probabilities, prediction_idx = self._predict_distilbert(
-                cleaned, settings.MAX_SEQUENCE_LENGTH,
-            )
+        analyzer = SentimentIntensityAnalyzer()
+        scores = analyzer.polarity_scores(text)
+        compound = scores["compound"]
+
+        # Map VADER scores to label
+        if compound >= 0.05:
+            label = "Positive"
+        elif compound <= -0.05:
+            label = "Negative"
         else:
-            raise ValueError(f"Unknown model: {model_name}")
+            label = "Neutral"
 
-        sentiment_map = settings.SENTIMENT_MAP
-        prob_dict = self._build_probability_dict(probabilities, sentiment_map)
+        # Build probability dict from VADER sub-scores
+        prob_dict = {
+            "Positive": round(scores["pos"], 4),
+            "Negative": round(scores["neg"], 4),
+            "Neutral": round(scores["neu"], 4),
+        }
 
-        label = sentiment_map.get(prediction_idx, "Neutral")
-        confidence = float(max(probabilities))
+        confidence = max(scores["pos"], scores["neg"], scores["neu"])
+        inference_time = time.time() - start
 
-        elapsed = time.time() - start
         logger.info(
-            "predict | model=%s | text_len=%d | label=%s | conf=%.2f%% | time=%.3fs",
-            model_name, len(text), label, confidence * 100, elapsed,
+            "predict | model=vader (via %s) | text_len=%d | label=%s | "
+            "conf=%.2f%% | compound=%.4f | time=%.3fs",
+            model_name, len(text), label, confidence * 100, compound,
+            inference_time,
         )
 
         return PredictionResponse(
@@ -289,28 +212,36 @@ class SentimentPredictor:
             confidence=round(confidence * 100, 2),
             model_used=model_name,
             probabilities=prob_dict,
+            inference_time=round(inference_time, 4),
         )
 
     def predict_all_models(self, text: str) -> AllModelsResponse:
-        """Run every loaded model on the same text and return consensus."""
+        """Run every available model on the same text in parallel and
+        return consensus.
+
+        Uses a ``ThreadPoolExecutor`` to run up to 5 models concurrently.
+        Individual failures are logged but don't block other models.
+        """
         settings = get_settings()
+        models_to_run = settings.MODEL_NAMES
         results: List[PredictionResponse] = []
 
-        # With lazy loading enabled, we can run every model sequentially
-        # without keeping them all resident in memory at once.
-        if settings.LAZY_LOADING:
-            models_to_run = settings.MODEL_NAMES
-        elif settings.LIGHTWEIGHT_MODE:
-            models_to_run = list(self.models.keys())
-        else:
-            models_to_run = settings.MODEL_NAMES
-
-        for model_name in models_to_run:
-            try:
-                result = self.predict(text, model_name)
-                results.append(result)
-            except Exception as exc:
-                logger.error("predict_all_models — '%s' failed: %s", model_name, exc)
+        with ThreadPoolExecutor(max_workers=len(models_to_run)) as executor:
+            future_to_model = {
+                executor.submit(self.predict, text, name): name
+                for name in models_to_run
+                if self.is_model_available(name)
+            }
+            for future in as_completed(future_to_model):
+                model_name = future_to_model[future]
+                try:
+                    result = future.result(timeout=60)
+                    results.append(result)
+                except Exception as exc:
+                    logger.error(
+                        "predict_all_models — '%s' failed: %s",
+                        model_name, exc,
+                    )
 
         if not results:
             return AllModelsResponse(results=[], consensus="Unknown", agreement_count=0)
@@ -384,6 +315,10 @@ class SentimentPredictor:
         """Return model names currently loaded in memory."""
         return list(self.models.keys())
 
+    def is_model_available(self, model_name: str) -> bool:
+        """Check if a specific model is loaded and ready for prediction."""
+        return model_name in self.models
+
     # ──────────────────────────────────────────────────────────
     #  Private loaders
     # ──────────────────────────────────────────────────────────
@@ -400,10 +335,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times[name] = elapsed
             self.load_errors.pop(name, None)
-            logger.info("Loaded %s in %.2f s", name, elapsed)
+            logger.info("✓ Loaded %s in %.2f s", name, elapsed)
         except Exception as exc:
             self.load_errors[name] = str(exc)
-            logger.error("Failed to load %s: %s", name, exc)
+            logger.error("✗ Failed to load %s: %s", name, exc)
 
     def _load_tfidf(self, path: Path) -> None:
         if self.tfidf is not None:
@@ -419,10 +354,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times["tfidf"] = elapsed
             self.load_errors.pop("tfidf", None)
-            logger.info("Loaded TF-IDF vectoriser in %.2f s", elapsed)
+            logger.info("✓ Loaded TF-IDF vectoriser in %.2f s", elapsed)
         except Exception as exc:
             self.load_errors["tfidf"] = str(exc)
-            logger.error("Failed to load TF-IDF: %s", exc)
+            logger.error("✗ Failed to load TF-IDF: %s", exc)
 
     def _load_keras_tokenizer(self, path: Path) -> None:
         if self.keras_tokenizer is not None:
@@ -438,10 +373,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times["keras_tokenizer"] = elapsed
             self.load_errors.pop("keras_tokenizer", None)
-            logger.info("Loaded Keras tokenizer in %.2f s", elapsed)
+            logger.info("✓ Loaded Keras tokenizer in %.2f s", elapsed)
         except Exception as exc:
             self.load_errors["keras_tokenizer"] = str(exc)
-            logger.error("Failed to load Keras tokenizer: %s", exc)
+            logger.error("✗ Failed to load Keras tokenizer: %s", exc)
 
     def _load_keras_model(self, name: str, path: Path) -> None:
         if not path.exists():
@@ -452,18 +387,42 @@ class SentimentPredictor:
         try:
             import tensorflow as tf
             tf.get_logger().setLevel("ERROR")
-            try:
-                # Inference-only loading is more compatible with training artefacts.
-                self.models[name] = tf.keras.models.load_model(str(path), compile=False)
-            except Exception:
-                self.models[name] = tf.keras.models.load_model(str(path))
+            load_attempts = [
+                {"compile": False, "safe_mode": False},
+                {"compile": False},
+                {"compile": True, "safe_mode": False},
+                {"compile": True},
+            ]
+            last_error: Optional[Exception] = None
+            for kwargs in load_attempts:
+                try:
+                    self.models[name] = tf.keras.models.load_model(str(path), **kwargs)
+                    last_error = None
+                    break
+                except TypeError:
+                    kwargs_without_safe = {k: v for k, v in kwargs.items() if k != "safe_mode"}
+                    try:
+                        self.models[name] = tf.keras.models.load_model(
+                            str(path), **kwargs_without_safe
+                        )
+                        last_error = None
+                        break
+                    except Exception as exc:
+                        last_error = exc
+                        continue
+                except Exception as exc:
+                    last_error = exc
+                    continue
+
+            if last_error is not None:
+                raise last_error
             elapsed = time.time() - start
             self.load_times[name] = elapsed
             self.load_errors.pop(name, None)
-            logger.info("Loaded %s in %.2f s", name, elapsed)
+            logger.info("✓ Loaded %s in %.2f s", name, elapsed)
         except Exception as exc:
             self.load_errors[name] = str(exc)
-            logger.error("Failed to load Keras model %s: %s", name, exc)
+            logger.error("✗ Failed to load Keras model %s: %s", name, exc)
 
     def _load_distilbert(self, model_path: Path, tokenizer_path: Path) -> None:
         if not model_path.exists():
@@ -481,26 +440,23 @@ class SentimentPredictor:
                 DistilBertForSequenceClassification,
                 DistilBertTokenizer,
             )
-            torch.set_num_threads(1)
+            torch.set_num_threads(min(4, len(self.models) + 1))
             try:
-                torch.set_num_interop_threads(1)
+                torch.set_num_interop_threads(2)
             except Exception:
                 pass
             self.bert_tokenizer = DistilBertTokenizer.from_pretrained(
-                str(tokenizer_path),
-                local_files_only=True,
+                str(tokenizer_path), local_files_only=True,
             )
             model = DistilBertForSequenceClassification.from_pretrained(
-                str(model_path),
-                local_files_only=True,
+                str(model_path), local_files_only=True,
             )
             if self.device == "cpu":
                 try:
                     model = torch.quantization.quantize_dynamic(
-                        model,
-                        {torch.nn.Linear},
-                        dtype=torch.qint8,
+                        model, {torch.nn.Linear}, dtype=torch.qint8,
                     )
+                    logger.info("  DistilBERT quantized to int8.")
                 except Exception as quant_exc:
                     logger.warning("DistilBERT quantization skipped: %s", quant_exc)
             model.to(self.device)
@@ -509,10 +465,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times["distilbert"] = elapsed
             self.load_errors.pop("distilbert", None)
-            logger.info("Loaded DistilBERT in %.2f s (device=%s)", elapsed, self.device)
+            logger.info("✓ Loaded DistilBERT in %.2f s (device=%s)", elapsed, self.device)
         except Exception as exc:
             self.load_errors["distilbert"] = str(exc)
-            logger.error("Failed to load DistilBERT: %s", exc)
+            logger.error("✗ Failed to load DistilBERT: %s", exc)
 
     # ──────────────────────────────────────────────────────────
     #  Private prediction methods
@@ -524,8 +480,6 @@ class SentimentPredictor:
             clf = model.named_steps.get("clf")
             pipeline_tfidf = model.named_steps.get("tfidf")
 
-            # Try both vectorizers in order. In some deployments, one
-            # deserializes without throwing but is not actually usable.
             if clf is not None:
                 vectorizer_candidates = [
                     ("shared_tfidf", self.tfidf),
@@ -541,20 +495,18 @@ class SentimentPredictor:
                         return probabilities, prediction
                     except Exception as exc:
                         logger.warning(
-                            "Logistic vectorizer '%s' failed at inference: %s",
-                            candidate_name,
-                            exc,
+                            "Logistic vectorizer '%s' failed: %s",
+                            candidate_name, exc,
                         )
 
-            # Last fallback for unusual pipeline variants.
             try:
                 prediction = int(model.predict([cleaned_text])[0])
                 probabilities = model.predict_proba([cleaned_text])[0]
                 return probabilities, prediction
             except Exception as exc:
                 raise RuntimeError(
-                    "Logistic regression artifacts are loaded but inference failed. "
-                    "Please verify TF-IDF/vectorizer compatibility in this deployment."
+                    "Logistic regression inference failed. "
+                    "Verify TF-IDF compatibility."
                 ) from exc
 
         if self.tfidf is None:

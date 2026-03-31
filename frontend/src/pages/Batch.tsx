@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Plot from "react-plotly.js";
+import PlotImport from "react-plotly.js";
 import {
   EntranceReveal,
   GlassCard,
@@ -11,7 +11,12 @@ import {
 import { predictBatch } from "../lib/api";
 import "./Batch.css";
 
-const AnimatedPlot = Plot as unknown as React.ComponentType<any>;
+// Handle ESM / CJS default export mismatch
+const PlotComponent =
+  typeof (PlotImport as any).default === "function"
+    ? (PlotImport as any).default
+    : PlotImport;
+const AnimatedPlot = PlotComponent as React.ComponentType<any>;
 
 /* ── Types ────────────────────────────────────────────────────── */
 
@@ -162,9 +167,8 @@ const Batch: React.FC = () => {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("model", model);
 
-    const res = await predictBatch(formData);
+    const res = await predictBatch(formData, model);
     clearInterval(interval);
     setProgress(100);
 

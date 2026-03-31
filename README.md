@@ -1,150 +1,147 @@
-# 📊 Twitter Sentiment Analysis  
-### End-to-End NLP Pipeline using Machine Learning & Transformer Models
+# Twitter Sentiment Analysis
 
----
+Full-stack sentiment analysis platform using 5 ML/DL models to classify tweets as **Positive**, **Negative**, or **Neutral**.
 
-## 🚀 Project Overview
+## Models
 
-This project implements a complete end-to-end Natural Language Processing (NLP) pipeline for sentiment classification on Twitter data.
+| Model | Type | Framework |
+|-------|------|-----------|
+| Logistic Regression | TF-IDF + Classifier | scikit-learn |
+| LSTM | Recurrent Neural Network | TensorFlow/Keras |
+| BiLSTM | Bidirectional LSTM | TensorFlow/Keras |
+| CNN | 1D Convolutional Network | TensorFlow/Keras |
+| DistilBERT | Fine-tuned Transformer | HuggingFace/PyTorch |
 
-The system compares:
+## Architecture
 
-- Classical Machine Learning models  
-- Deep Learning architectures  
-- Transformer-based models (DistilBERT)
+```
+┌─────────────────────┐       ┌──────────────────────────────┐
+│   Frontend (React)  │──────▶│   Backend (FastAPI)          │
+│   Deployed: Vercel  │ HTTPS │   Deployed: Oracle Cloud VM  │
+└─────────────────────┘       │   4 ARM cores, 24 GB RAM     │
+                              │   All 5 models loaded         │
+                              └──────────────────────────────┘
+```
 
-The objective is to evaluate performance differences and build a clean, modular, and reproducible NLP workflow similar to real-world ML projects.
+## Project Structure
 
----
-
-## 🎯 Objectives
-
-- Perform sentiment classification on Twitter text data  
-- Compare ML, Deep Learning, and Transformer models  
-- Fine-tune DistilBERT for contextual understanding  
-- Evaluate models using proper classification metrics  
-- Maintain structured and reusable code  
-
----
-
-## 🧠 Models Implemented
-
-### 🔹 Classical ML
-- Logistic Regression (TF-IDF features)
-- Random Forest
-- XGBoost
-- Naive Bayes
-- Linear SVM 
-
-### 🔹 Deep Learning
-
-- CNN  
-- LSTM  
-- BiLSTM  
-
-### 🔹 Transformer Model
-- DistilBERT (Fine-tuned)
-
----
-
-## 🔄 NLP Pipeline
-
-1. Data Cleaning  
-   - URL removal  
-   - Special character removal  
-   - Lowercasing  
-   - Stopword removal  
-
-2. Tokenization  
-   - Custom tokenizer for ML models  
-   - HuggingFace tokenizer for DistilBERT  
-
-3. Feature Engineering  
-   - TF-IDF vectorization  
-   - Sequence padding  
-
-4. Model Training  
-   - Train-validation split  
-   - Supervised learning  
-
-5. Evaluation  
-   - Accuracy  
-   - Precision  
-   - Recall  
-   - F1-score  
-   - Confusion Matrix  
-
----
-
-## 📈 Model Performance
-
-| Model                | Accuracy |
-|----------------------|----------|
-| Logistic Regression  | 79%      |
-| CNN                  | 64%      |
-| LSTM                 | 64%      |
-| BiLSTM               | 71%      |
-| DistilBERT           | **XX%**  |
-
----
-
-## 🏗 Project Structure
+```
 twitter_analysis/
-│
-├── data/ # Raw and processed datasets
-├── models/ # Saved trained models (ignored in Git)
-├── notebooks/ # EDA and experimentation notebooks
-├── scripts/ # Training and preprocessing scripts
-│ ├── data_cleaning.py
-│ ├── visualization.py
-├── requirements.txt
-├── setup.py
-└── README.md
+├── backend/                    ← FastAPI application
+│   ├── app/
+│   │   ├── config.py           ← Settings & environment handling
+│   │   ├── main.py             ← App entry point
+│   │   ├── routes/             ← API endpoints
+│   │   ├── services/           ← Business logic & ML inference
+│   │   ├── schemas/            ← Pydantic models
+│   │   └── middleware/         ← Rate limiting, etc.
+│   ├── scripts/
+│   │   └── test_api.py         ← API test suite
+│   ├── Dockerfile              ← ARM64-optimized container
+│   └── requirements.txt
+├── frontend/                   ← React + Vite application
+├── deployment/                 ← Oracle Cloud VM infrastructure
+│   ├── docker-compose.yml
+│   ├── nginx.conf
+│   ├── setup.sh                ← One-time VM bootstrap
+│   ├── start.sh / stop.sh      ← Container management
+│   ├── test-deployment.sh      ← Deployment verification
+│   ├── copy-files.md           ← File transfer guide
+│   ├── ssl-setup.md            ← HTTPS setup guide
+│   └── README.md               ← Full deployment docs
+├── models/                     ← ML model files (git-ignored)
+├── data/                       ← Dataset files (git-ignored)
+├── DEPLOYMENT_CHECKLIST.md     ← Step-by-step deployment checklist
+└── README.md                   ← This file
+```
 
+## API Endpoints
 
-> Note: Large trained model files are excluded due to GitHub size limitations. Models can be regenerated using the training scripts.
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check with model status |
+| `/api/info` | GET | API metadata and available models |
+| `/api/dashboard/stats` | GET | Dashboard statistics |
+| `/api/eda/*` | GET | Exploratory data analysis |
+| `/api/models/comparison` | GET | Model performance comparison |
+| `/api/predict/` | POST | Single text prediction |
+| `/api/predict/all` | POST | All-models parallel prediction |
+| `/api/predict/batch` | POST | CSV batch prediction |
+| `/api/predict/models` | GET | Model status and metadata |
+| `/docs` | GET | Interactive Swagger UI |
 
----
+## Local Development
 
-## 🛠 Tech Stack
+### Backend
 
-- Python  
-- Scikit-learn  
-- TensorFlow / Keras  
-- PyTorch  
-- HuggingFace Transformers  
-- Pandas  
-- NumPy  
-- Matplotlib / Seaborn  
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
 
----
-## ▶️ How to Run
-python notebooks/model_training.ipynb
+### Frontend
 
+```bash
+cd frontend
+npm install
+cp .env.example .env             # Edit VITE_API_BASE if needed
+npm run dev
+```
 
----
+## Deployment
 
-## 📊 Exploratory Data Analysis
+### Frontend → Vercel
 
-EDA includes:
-- Sentiment distribution visualization  
-- Text length analysis  
-- Word frequency analysis  
+1. Push `frontend/` to GitHub
+2. Connect the repo to [Vercel](https://vercel.com)
+3. Set environment variable: `VITE_API_BASE=https://api.yourdomain.com`
+4. Deploy
 
-Notebooks are available in the `/notebooks` directory.
+### Backend → Oracle Cloud ARM VM
 
----
+The backend runs on an **Oracle Cloud Ampere A1 VM** (4 OCPU, 24 GB RAM, Ubuntu 22.04 ARM64).
 
-## 🔮 Future Improvements
+**Quick start on VM:**
 
-- Hyperparameter tuning  
-- Model deployment using FastAPI  
-- Docker containerization  
-- Real-time inference API  
+```bash
+# 1. Bootstrap the VM (one-time)
+sudo bash deployment/setup.sh
 
----
+# 2. Copy model files (see deployment/copy-files.md)
+rsync -avzP models/ ubuntu@VM_IP:/opt/twitter-sentiment/models/
 
-## 👤 Author
+# 3. Configure
+cp deployment/.env.example deployment/.env
+nano deployment/.env              # Set ALLOWED_ORIGINS, etc.
 
-**Sameer Tripathi**  
-Aspiring AI/ML Engineer | Data Science Enthusiast
+# 4. Build & start
+bash deployment/start.sh
+
+# 5. Verify
+bash deployment/test-deployment.sh
+```
+
+**Detailed guides:**
+
+- 📋 [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) — step-by-step with checkboxes
+- 📖 [Deployment README](deployment/README.md) — comprehensive documentation
+- 📁 [File Transfer Guide](deployment/copy-files.md) — SCP, rsync, Object Storage
+- 🔒 [SSL Setup Guide](deployment/ssl-setup.md) — Let's Encrypt + Nginx
+
+## Testing
+
+```bash
+# API test suite (requires running backend)
+pip install httpx
+python backend/scripts/test_api.py http://localhost:8000
+
+# Deployment verification (on VM)
+bash deployment/test-deployment.sh
+```
+
+## License
+
+MIT

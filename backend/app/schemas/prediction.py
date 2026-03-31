@@ -37,6 +37,11 @@ class PredictionResponse(BaseModel):
         description="Per-class probability distribution.",
         json_schema_extra={"example": {"Positive": 0.94, "Negative": 0.03, "Neutral": 0.03}},
     )
+    inference_time: Optional[float] = Field(
+        default=None,
+        description="Inference time in seconds.",
+        json_schema_extra={"example": 0.0234},
+    )
 
 
 class AllModelsRequest(BaseModel):

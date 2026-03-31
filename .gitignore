@@ -16,7 +16,11 @@ build/
 .venv/
 venv/
 env/
+
+# ---------- Environment files ----------
 .env
+!.env.example
+.env.production
 
 # ---------- IDE / Editor ----------
 .vscode/
@@ -29,26 +33,40 @@ env/
 .ipynb_checkpoints/
 
 # ---------- Saved models & artefacts ----------
+# Models and data are uploaded to the VM separately, not via Git.
 models/
 *.h5
 *.hdf5
 *.pkl
+*.keras
 *.joblib
 *.pt
 *.pth
 *.onnx
 *.tflite
 *.pb
+*.safetensors
+
+# ---------- DistilBERT directories ----------
+distilbert_model/
+distilbert_tokenizer/
+
+# ---------- Node / Frontend ----------
+node_modules/
+frontend/dist/
 
 # ---------- Data (large / generated) ----------
+data/*.csv
 data/processed/
 data/external/
 *.csv.gz
 *.parquet
+
+# ---------- Embeddings & GloVe ----------
+embeddings/
 glove*.txt
 glove/
 gloVE/
-embeddings/
 
 # ---------- Logs & experiment tracking ----------
 logs/
@@ -61,6 +79,12 @@ mlruns/
 Thumbs.db
 desktop.ini
 
+# ---------- Reports (generated figures) ----------
+reports/figures/
+
 # ---------- Misc ----------
 *.bak
 *.tmp
+
+.vercel
+.env*.local

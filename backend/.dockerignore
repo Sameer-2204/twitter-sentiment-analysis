@@ -1,11 +1,16 @@
+# =============================================================================
+# .dockerignore — Twitter Sentiment Analysis API
+#
+# Keeps the Docker build context small and prevents sensitive/unnecessary
+# files from being sent to the Docker daemon.
+# =============================================================================
+
+# ── Version control ──────────────────────────────────────────
 .git
 .gitignore
-.env
-.env.*
-.venv/
-venv/
-env/
-ENV/
+.gitattributes
+
+# ── Python artifacts ─────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
@@ -13,7 +18,47 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# ── Virtual environments ─────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── Environment files (secrets) ──────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── IDE ──────────────────────────────────────────────────────
 .vscode/
 .idea/
+
+# ── Tests ────────────────────────────────────────────────────
+tests/
+
+# ── Documentation (not needed in image) ──────────────────────
+*.md
+docs/
+
+# ── Models & data (mounted as volumes, NOT baked into image) ─
+models/
+data/
+reports/
+embeddings/
+gloVE/
+
+# ── Other project directories not needed in backend image ────
+frontend/
+notebooks/
 scripts/
-README.md
+configs/
+logs/
+Microsoft/
+twitter_analysis.egg-info/
+
+# ── Notebooks ────────────────────────────────────────────────
+*.ipynb
+
+# ── OS artifacts ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db

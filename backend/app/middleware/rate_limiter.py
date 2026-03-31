@@ -19,8 +19,6 @@ from typing import Dict, List
 
 from fastapi import HTTPException, Request
 
-from app.config import get_settings
-
 logger = logging.getLogger(__name__)
 
 
@@ -37,12 +35,11 @@ class RateLimiter:
 
     def __init__(
         self,
-        max_requests: int | None = None,
-        window_seconds: int | None = None,
+        max_requests: int = 30,
+        window_seconds: int = 60,
     ) -> None:
-        settings = get_settings()
-        self.max_requests: int = max_requests or settings.RATE_LIMIT_MAX_REQUESTS
-        self.window_seconds: int = window_seconds or settings.RATE_LIMIT_WINDOW_SECONDS
+        self.max_requests: int = max_requests
+        self.window_seconds: int = window_seconds
         self._requests: Dict[str, List[float]] = defaultdict(list)
 
     def _get_client_ip(self, request: Request) -> str:

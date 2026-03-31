@@ -1,13 +1,71 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+
+/* ── API Configuration ──────────────────────────────────────── */
 
 const API_BASE =
   import.meta.env.VITE_API_BASE || "http://localhost:8000";
+
+console.log("🔗 API Configuration:");
+console.log(`   Base URL: ${API_BASE}`);
+console.log(`   Environment: ${import.meta.env.MODE}`);
 
 const api = axios.create({
   baseURL: API_BASE,
   timeout: 30_000,
   headers: { "Content-Type": "application/json" },
 });
+
+/* ── Error helpers ──────────────────────────────────────────── */
+
+function formatError(err: unknown, context: string): null {
+  if (err instanceof AxiosError) {
+    if (err.code === "ERR_NETWORK" || err.message === "Network Error") {
+      console.error(
+        `${context}: Backend unreachable at ${API_BASE}.\n` +
+        `  → Is the backend running? (python run.py)\n` +
+        `  → Is the Cloudflare tunnel active? (cloudflared tunnel --url http://localhost:8000)\n` +
+        `  → Is VITE_API_BASE correct in .env?`
+      );
+    } else if (err.response) {
+      console.error(
+        `${context}: HTTP ${err.response.status} — ${err.response.statusText}`
+      );
+    } else {
+      console.error(`${context}: ${err.message}`);
+    }
+  } else {
+    console.error(`${context}:`, err);
+  }
+  return null;
+}
+
+/* ── Connection test ────────────────────────────────────────── */
+
+export async function testConnection(): Promise<{
+  connected: boolean;
+  latency?: number;
+  error?: string;
+}> {
+  const start = performance.now();
+  try {
+    const response = await api.get("/api/health");
+    const latency = Math.round(performance.now() - start);
+    if (response.status === 200) {
+      console.log(`✅ Backend connected (${latency}ms)`);
+      return { connected: true, latency };
+    }
+    return { connected: false, error: `HTTP ${response.status}` };
+  } catch (err) {
+    const msg =
+      err instanceof AxiosError
+        ? err.code === "ERR_NETWORK"
+          ? "Backend unreachable"
+          : err.message
+        : "Unknown error";
+    console.error("❌ Backend connection failed:", msg);
+    return { connected: false, error: msg };
+  }
+}
 
 /* ── Dashboard ────────────────────────────────────────────────── */
 
@@ -16,8 +74,7 @@ export async function fetchDashboardStats() {
     const { data } = await api.get("/api/dashboard/stats");
     return data;
   } catch (err) {
-    console.error("fetchDashboardStats failed:", err);
-    return null;
+    return formatError(err, "fetchDashboardStats");
   }
 }
 
@@ -28,8 +85,18 @@ export async function fetchRecentTweets(limit = 10, page = 1) {
     });
     return data;
   } catch (err) {
-    console.error("fetchRecentTweets failed:", err);
-    return null;
+    return formatError(err, "fetchRecentTweets");
+  }
+}
+
+export async function fetchSentimentTrend(batchSize = 1000) {
+  try {
+    const { data } = await api.get("/api/dashboard/sentiment-trend", {
+      params: { batch_size: batchSize },
+    });
+    return data;
+  } catch (err) {
+    return formatError(err, "fetchSentimentTrend");
   }
 }
 
@@ -40,8 +107,7 @@ export async function fetchClassDistribution() {
     const { data } = await api.get("/api/eda/class-distribution");
     return data;
   } catch (err) {
-    console.error("fetchClassDistribution failed:", err);
-    return null;
+    return formatError(err, "fetchClassDistribution");
   }
 }
 
@@ -52,8 +118,7 @@ export async function fetchWordFrequency(sentiment?: string) {
     });
     return data;
   } catch (err) {
-    console.error("fetchWordFrequency failed:", err);
-    return null;
+    return formatError(err, "fetchWordFrequency");
   }
 }
 
@@ -64,8 +129,7 @@ export async function fetchBigrams(sentiment?: string) {
     });
     return data;
   } catch (err) {
-    console.error("fetchBigrams failed:", err);
-    return null;
+    return formatError(err, "fetchBigrams");
   }
 }
 
@@ -76,8 +140,7 @@ export async function fetchTrigrams(sentiment?: string) {
     });
     return data;
   } catch (err) {
-    console.error("fetchTrigrams failed:", err);
-    return null;
+    return formatError(err, "fetchTrigrams");
   }
 }
 
@@ -86,8 +149,7 @@ export async function fetchTweetLengths() {
     const { data } = await api.get("/api/eda/tweet-lengths");
     return data;
   } catch (err) {
-    console.error("fetchTweetLengths failed:", err);
-    return null;
+    return formatError(err, "fetchTweetLengths");
   }
 }
 
@@ -98,8 +160,7 @@ export async function fetchWordcloudData(sentiment?: string) {
     });
     return data;
   } catch (err) {
-    console.error("fetchWordcloudData failed:", err);
-    return null;
+    return formatError(err, "fetchWordcloudData");
   }
 }
 
@@ -110,8 +171,7 @@ export async function fetchHashtags(sentiment?: string) {
     });
     return data;
   } catch (err) {
-    console.error("fetchHashtags failed:", err);
-    return null;
+    return formatError(err, "fetchHashtags");
   }
 }
 
@@ -122,8 +182,7 @@ export async function fetchMentions(sentiment?: string) {
     });
     return data;
   } catch (err) {
-    console.error("fetchMentions failed:", err);
-    return null;
+    return formatError(err, "fetchMentions");
   }
 }
 
@@ -134,8 +193,7 @@ export async function fetchModelComparison() {
     const { data } = await api.get("/api/models/comparison");
     return data;
   } catch (err) {
-    console.error("fetchModelComparison failed:", err);
-    return null;
+    return formatError(err, "fetchModelComparison");
   }
 }
 
@@ -146,8 +204,7 @@ export async function fetchConfusionMatrix(modelName: string) {
     );
     return data;
   } catch (err) {
-    console.error("fetchConfusionMatrix failed:", err);
-    return null;
+    return formatError(err, "fetchConfusionMatrix");
   }
 }
 
@@ -158,8 +215,7 @@ export async function fetchTrainingHistory(modelName: string) {
     );
     return data;
   } catch (err) {
-    console.error("fetchTrainingHistory failed:", err);
-    return null;
+    return formatError(err, "fetchTrainingHistory");
   }
 }
 
@@ -167,11 +223,11 @@ export async function fetchTrainingHistory(modelName: string) {
 
 export async function predictSentiment(text: string, model?: string) {
   try {
-    const { data } = await api.post("/api/predict", { text, model });
+    const body = model ? { text, model_name: model } : { text };
+    const { data } = await api.post("/api/predict/", body);
     return data;
   } catch (err) {
-    console.error("predictSentiment failed:", err);
-    return null;
+    return formatError(err, "predictSentiment");
   }
 }
 
@@ -180,19 +236,18 @@ export async function predictAllModels(text: string) {
     const { data } = await api.post("/api/predict/all", { text });
     return data;
   } catch (err) {
-    console.error("predictAllModels failed:", err);
-    return null;
+    return formatError(err, "predictAllModels");
   }
 }
 
-export async function predictBatch(formData: FormData) {
+export async function predictBatch(formData: FormData, modelName?: string) {
   try {
     const { data } = await api.post("/api/predict/batch", formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      params: modelName ? { model_name: modelName } : {},
     });
     return data;
   } catch (err) {
-    console.error("predictBatch failed:", err);
-    return null;
+    return formatError(err, "predictBatch");
   }
 }

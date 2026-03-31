@@ -11,7 +11,7 @@ import csv
 import io
 import logging
 import time
-from typing import List
+from typing import Dict, List
 
 from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import StreamingResponse
@@ -25,6 +25,7 @@ from app.schemas.prediction import (
     PredictionResponse,
 )
 from app.services.predictor import predictor
+from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,40 @@ router = APIRouter(tags=["Prediction"])
 # ── Allowed model names ───────────────────────────────────────
 _ALLOWED_MODELS = {
     "logistic_regression", "lstm", "bilstm", "cnn", "distilbert",
+}
+
+# ── Model metadata (for /models endpoint) ────────────────────
+_MODEL_META: Dict[str, Dict] = {
+    "logistic_regression": {
+        "type": "scikit-learn",
+        "format": ".pkl",
+        "size_estimate_mb": 9,
+        "description": "TF-IDF + Logistic Regression pipeline",
+    },
+    "lstm": {
+        "type": "TensorFlow/Keras",
+        "format": ".h5",
+        "size_estimate_mb": 36,
+        "description": "LSTM recurrent neural network",
+    },
+    "bilstm": {
+        "type": "TensorFlow/Keras",
+        "format": ".h5",
+        "size_estimate_mb": 38,
+        "description": "Bidirectional LSTM recurrent neural network",
+    },
+    "cnn": {
+        "type": "TensorFlow/Keras",
+        "format": ".h5",
+        "size_estimate_mb": 38,
+        "description": "1D Convolutional Neural Network",
+    },
+    "distilbert": {
+        "type": "HuggingFace/PyTorch",
+        "format": "directory (safetensors)",
+        "size_estimate_mb": 268,
+        "description": "Fine-tuned DistilBERT transformer",
+    },
 }
 
 
@@ -47,21 +82,30 @@ _ALLOWED_MODELS = {
     summary="Predict sentiment for a single text",
     description=(
         "Runs the specified model on the given text and returns the "
-        "predicted sentiment label, confidence score, and per-class "
-        "probability distribution."
+        "predicted sentiment label, confidence score, per-class "
+        "probability distribution, and inference time."
     ),
 )
 def predict_single(request: PredictionRequest, req: Request):
     """Predict sentiment for a single text using the chosen model."""
     rate_limiter.check_rate_limit(req)
 
-    # Validate model name
     if request.model_name not in _ALLOWED_MODELS:
         raise HTTPException(
             status_code=400,
             detail=(
                 f"Invalid model '{request.model_name}'. "
                 f"Allowed: {sorted(_ALLOWED_MODELS)}"
+            ),
+        )
+
+    # Check if model is actually loaded
+    if not predictor.is_model_available(request.model_name):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Model '{request.model_name}' is not loaded. "
+                f"Available: {predictor.get_available_models()}"
             ),
         )
 
@@ -73,17 +117,14 @@ def predict_single(request: PredictionRequest, req: Request):
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     except Exception as exc:
-        logger.error("Prediction failed: %s", exc)
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.error("Prediction failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Prediction failed.")
 
     elapsed = time.time() - start
     logger.info(
         "POST /predict | model=%s | text_len=%d | label=%s | conf=%.1f%% | %.3fs",
-        request.model_name,
-        len(request.text),
-        result.label,
-        result.confidence,
-        elapsed,
+        request.model_name, len(request.text),
+        result.label, result.confidence, elapsed,
     )
     return result
 
@@ -91,11 +132,10 @@ def predict_single(request: PredictionRequest, req: Request):
 @router.post(
     "/all",
     response_model=AllModelsResponse,
-    summary="Get predictions from all 5 models for comparison",
+    summary="Get predictions from all available models",
     description=(
-        "Runs every loaded model on the same text and returns "
-        "individual predictions, the consensus label, and how many "
-        "models agree."
+        "Runs every loaded model on the same text in parallel and returns "
+        "individual predictions, the consensus label, and agreement count."
     ),
 )
 def predict_all_models(request: AllModelsRequest, req: Request):
@@ -106,8 +146,8 @@ def predict_all_models(request: AllModelsRequest, req: Request):
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     except Exception as exc:
-        logger.error("All-models prediction failed: %s", exc)
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.error("All-models prediction failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Multi-model prediction failed.")
 
 
 @router.post(
@@ -117,7 +157,7 @@ def predict_all_models(request: AllModelsRequest, req: Request):
     description=(
         "Accepts a CSV file with a 'text' column (case-insensitive: "
         "text, Text, TEXT, tweet, Tweet). Returns predictions for every "
-        "row plus an aggregate summary. Max file size: 5 MB, max 5000 rows."
+        "row plus an aggregate summary. Max file size: 5 MB, max 1000 rows."
     ),
 )
 async def predict_batch(
@@ -168,7 +208,6 @@ async def predict_batch(
         reader = csv.DictReader(io.StringIO(decoded))
         fieldnames = reader.fieldnames or []
 
-        # Case-insensitive search for text column
         text_col = None
         for name in fieldnames:
             if name.strip().lower() in ("text", "tweet", "content", "message"):
@@ -208,16 +247,15 @@ async def predict_batch(
             detail="CSV contains no valid text rows.",
         )
 
-    if len(texts) > 5000:
+    if len(texts) > 1000:
         raise HTTPException(
             status_code=400,
-            detail=f"Maximum 5000 rows allowed, found {len(texts)}.",
+            detail=f"Maximum 1000 rows allowed, found {len(texts)}.",
         )
 
     logger.info(
         "Batch prediction: %d rows with model '%s'",
-        len(texts),
-        model_name,
+        len(texts), model_name,
     )
 
     try:
@@ -225,8 +263,39 @@ async def predict_batch(
     except RuntimeError as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     except Exception as exc:
-        logger.error("Batch prediction failed: %s", exc)
-        raise HTTPException(status_code=500, detail=str(exc))
+        logger.error("Batch prediction failed: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail="Batch prediction failed.")
+
+
+@router.get(
+    "/models",
+    summary="List available models and their status",
+    description=(
+        "Returns metadata for all 5 models including load status, "
+        "load time, model type, format, and estimated size."
+    ),
+)
+def list_models():
+    """Return all model names with their load status and metadata."""
+    available = predictor.get_available_models()
+    settings = get_settings()
+
+    models_info = []
+    for name in settings.MODEL_NAMES:
+        meta = _MODEL_META.get(name, {})
+        models_info.append({
+            "name": name,
+            "loaded": name in available,
+            "load_time_seconds": predictor.load_times.get(name),
+            "error": predictor.load_errors.get(name),
+            **meta,
+        })
+
+    return {
+        "models": models_info,
+        "total_loaded": len(available),
+        "total_available": len(settings.MODEL_NAMES),
+    }
 
 
 @router.get(

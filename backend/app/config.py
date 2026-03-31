@@ -1,45 +1,57 @@
 """
-config.py — Application settings loaded from environment variables via Pydantic.
+config.py — Application settings for local development.
 
-Uses ``functools.lru_cache`` so the settings object is created only once.
+Uses pydantic-settings to load from environment / .env file.
+All paths auto-resolve relative to the backend/ directory.
 """
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
-import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
-from pydantic import Field, field_validator
 
 
 class Settings(BaseSettings):
-    """Central configuration for the Twitter Sentiment Analysis API."""
+    """Configuration for the Twitter Sentiment Analysis API (local dev)."""
 
     # ── App meta ──────────────────────────────────────────────
     APP_NAME: str = "Twitter Sentiment Analysis API"
     VERSION: str = "1.0.0"
-    DEBUG: bool = False
-    ALLOWED_ORIGINS: str = "https://*.vercel.app,http://localhost:*"
+    DEBUG: bool = True
+    LOG_LEVEL: str = "DEBUG"
+
+    # ── Server ────────────────────────────────────────────────
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+
+    # ── CORS — allow everything for local development ─────────
+    ALLOWED_ORIGINS: str = "*"
 
     @property
     def allowed_origins_list(self) -> list[str]:
-        """Split comma-separated origins into a list."""
+        """Parse ALLOWED_ORIGINS into a list.
+
+        - ``"*"``  → ``["*"]``
+        - ``"https://a.com,https://b.com"`` → ``["https://a.com", "https://b.com"]``
+        """
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
 
-    # ── Paths ─────────────────────────────────────────────────
-    BASE_DIR: Path = Path(__file__).resolve().parent.parent  # backend/
-    DATA_DIR: Optional[Path] = Field(default=None)
+    # ── Paths (auto-detected from config.py location) ─────────
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent  # → backend/
     MODELS_DIR: Optional[Path] = Field(default=None)
+    DATA_DIR: Optional[Path] = Field(default=None)
     REPORTS_DIR: Optional[Path] = Field(default=None)
 
-    # ── Dataset paths ─────────────────────────────────────────
+    # ── Dataset file paths ────────────────────────────────────
     TRAIN_DATA_PATH: Optional[Path] = Field(default=None)
     VALID_DATA_PATH: Optional[Path] = Field(default=None)
 
-    # ── Model paths ───────────────────────────────────────────
+    # ── Model file paths ──────────────────────────────────────
     LOGISTIC_REGRESSION_PATH: Optional[Path] = Field(default=None)
     TFIDF_VECTORIZER_PATH: Optional[Path] = Field(default=None)
     TOKENIZER_PATH: Optional[Path] = Field(default=None)
@@ -72,70 +84,37 @@ class Settings(BaseSettings):
         "distilbert",
     ]
 
-    # ── Deployment / Resource management ──────────────────────
-    DEPLOYMENT_TARGET: str = "auto"  # auto | render | hf
-    SPACE_ID: Optional[str] = None   # Set automatically on Hugging Face Spaces
-    LIGHTWEIGHT_MODE: Optional[bool] = None
-    LAZY_LOADING: Optional[bool] = None
-
-    # ── Rate limiting ─────────────────────────────────────────
-    RATE_LIMIT_MAX_REQUESTS: int = 30
-    RATE_LIMIT_WINDOW_SECONDS: int = 60
+    # ── Logging ───────────────────────────────────────────────
+    LOG_FORMAT: str = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+    LOG_DATE_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
 
     def model_post_init(self, __context) -> None:
-        """Resolve default paths relative to BASE_DIR after init."""
-        is_hf_space = bool(self.SPACE_ID or os.getenv("SPACE_ID"))
-        target = (self.DEPLOYMENT_TARGET or "auto").strip().lower()
-        if target == "auto":
-            target = "hf" if is_hf_space else "render"
+        """Resolve default paths relative to BASE_DIR (backend/).
 
-        # Deployment-aware defaults:
-        # - Render free: lightweight + lazy-loading (fits 512MB)
-        # - HF Spaces free CPU: full preload (enough RAM for all 5 models)
-        if self.LIGHTWEIGHT_MODE is None:
-            self.LIGHTWEIGHT_MODE = target != "hf"
-        if self.LAZY_LOADING is None:
-            self.LAZY_LOADING = target == "render"
-
+        All paths point to sibling directories of backend/ in the
+        project root (i.e. ``../models``, ``../data``, ``../reports``).
+        """
         project_root = self.BASE_DIR.parent  # twitter_analysis/
 
-        def resolve_shared_dir(name: str) -> Path:
-            candidates = [
-                self.BASE_DIR / name,
-                project_root / name,
-            ]
-
-            for candidate in candidates:
-                if candidate.is_dir():
-                    has_real_content = any(
-                        child.name != ".gitkeep"
-                        for child in candidate.rglob("*")
-                    )
-                    if has_real_content:
-                        return candidate
-
-            for candidate in candidates:
-                if candidate.exists():
-                    return candidate
-
-            return self.BASE_DIR / name
-
-        if self.DATA_DIR is None:
-            self.DATA_DIR = resolve_shared_dir("data")
+        # ── Directory paths ───────────────────────────────────
         if self.MODELS_DIR is None:
-            self.MODELS_DIR = resolve_shared_dir("models")
+            self.MODELS_DIR = project_root / "models"
+        if self.DATA_DIR is None:
+            self.DATA_DIR = project_root / "data"
         if self.REPORTS_DIR is None:
-            self.REPORTS_DIR = resolve_shared_dir("reports")
+            self.REPORTS_DIR = project_root / "reports"
 
+        # ── Dataset file paths ────────────────────────────────
         if self.TRAIN_DATA_PATH is None:
             self.TRAIN_DATA_PATH = self.DATA_DIR / "train_data.csv"
         if self.VALID_DATA_PATH is None:
             self.VALID_DATA_PATH = self.DATA_DIR / "valid_data.csv"
 
+        # ── Model file paths ─────────────────────────────────
         if self.LOGISTIC_REGRESSION_PATH is None:
             self.LOGISTIC_REGRESSION_PATH = self.MODELS_DIR / "logistic_regression.pkl"
         if self.TFIDF_VECTORIZER_PATH is None:
@@ -154,6 +133,52 @@ class Settings(BaseSettings):
             self.DISTILBERT_TOKENIZER_PATH = self.MODELS_DIR / "distilbert_tokenizer"
         if self.MODEL_COMPARISON_PATH is None:
             self.MODEL_COMPARISON_PATH = self.REPORTS_DIR / "model_comparison_report.json"
+
+        # ── Verify paths exist and warn ───────────────────────
+        logger = logging.getLogger(__name__)
+        for label, path in [
+            ("MODELS_DIR", self.MODELS_DIR),
+            ("DATA_DIR", self.DATA_DIR),
+            ("REPORTS_DIR", self.REPORTS_DIR),
+        ]:
+            if not path.exists():
+                logger.warning("⚠️  %s does not exist: %s", label, path)
+
+    # ── Model path helpers ────────────────────────────────────
+
+    def get_logistic_regression_path(self) -> Path:
+        return self.LOGISTIC_REGRESSION_PATH
+
+    def get_tfidf_path(self) -> Path:
+        return self.TFIDF_VECTORIZER_PATH
+
+    def get_tokenizer_path(self) -> Path:
+        return self.TOKENIZER_PATH
+
+    def get_lstm_path(self) -> Path:
+        return self.LSTM_MODEL_PATH
+
+    def get_bilstm_path(self) -> Path:
+        return self.BILSTM_MODEL_PATH
+
+    def get_cnn_path(self) -> Path:
+        return self.CNN_MODEL_PATH
+
+    def get_distilbert_model_path(self) -> Path:
+        return self.DISTILBERT_MODEL_PATH
+
+    def get_distilbert_tokenizer_path(self) -> Path:
+        return self.DISTILBERT_TOKENIZER_PATH
+
+
+def configure_logging(settings: Settings) -> None:
+    """Configure root logger based on settings."""
+    logging.basicConfig(
+        level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
+        format=settings.LOG_FORMAT,
+        datefmt=settings.LOG_DATE_FORMAT,
+        force=True,
+    )
 
 
 @lru_cache()

@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import Plot from "react-plotly.js";
+import PlotImport from "react-plotly.js";
 import { motion, useInView } from "framer-motion";
+
+// Handle ESM / CJS default export mismatch
+const PlotComponent =
+  typeof (PlotImport as any).default === "function"
+    ? (PlotImport as any).default
+    : PlotImport;
+const AnimatedPlot = PlotComponent as React.ComponentType<any>;
 import {
   Bar,
   BarChart,
@@ -21,12 +28,11 @@ import {
 import {
   fetchDashboardStats,
   fetchRecentTweets,
+  fetchSentimentTrend,
   fetchWordFrequency,
   fetchWordcloudData,
 } from "../lib/api";
 import "./Dashboard.css";
-
-const AnimatedPlot = Plot as unknown as React.ComponentType<any>;
 
 type SentimentType = "positive" | "negative" | "neutral";
 type FilterType = "all" | SentimentType;
@@ -199,6 +205,21 @@ const normalizeWordEntries = (
   raw: unknown,
   fallbackSentiment: FilterType = "all"
 ): KeywordEntry[] => {
+  // Handle backend response shape: { words: {word: count, ...}, sentiment_filter: "..." }
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const record = raw as Record<string, unknown>;
+    if (record.words && typeof record.words === "object" && !Array.isArray(record.words)) {
+      // words is a dict like {"stock": 1234, "market": 987, ...}
+      return Object.entries(record.words as Record<string, unknown>)
+        .map(([word, value]) => ({
+          word,
+          count: safeNumber(value),
+          sentiment: fallbackSentiment,
+        }))
+        .filter((entry) => entry.word && entry.count > 0);
+    }
+  }
+
   const source = resolveArray(raw);
 
   if (source.length > 0) {
@@ -227,6 +248,7 @@ const normalizeWordEntries = (
 
   if (raw && typeof raw === "object") {
     return Object.entries(raw as Record<string, unknown>)
+      .filter(([key]) => key !== "sentiment_filter")
       .map(([word, value]) => ({
         word,
         count: safeNumber(value),
@@ -236,6 +258,7 @@ const normalizeWordEntries = (
   }
 
   return [];
+
 };
 
 const normalizeTweetsResponse = (
@@ -409,13 +432,23 @@ const Dashboard: React.FC = () => {
     const loadStats = async () => {
       setStatsLoading(true);
       setStatsError(null);
-      const response = await fetchDashboardStats();
+
+      // Fetch stats and trend in parallel
+      const [statsResponse, trendResponse] = await Promise.all([
+        fetchDashboardStats(),
+        fetchSentimentTrend(),
+      ]);
       if (!isMounted) return;
 
-      if (!response) {
+      if (!statsResponse) {
         setStatsError("Unable to load dashboard stats right now.");
       } else {
-        setStats(normalizeStats(response));
+        // Merge trend data into the stats object so normalizeStats picks it up
+        const merged = { ...statsResponse };
+        if (trendResponse && trendResponse.trend) {
+          merged.trend = trendResponse.trend;
+        }
+        setStats(normalizeStats(merged));
       }
       setStatsLoading(false);
     };
