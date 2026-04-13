@@ -5,7 +5,7 @@ import {
   Route,
 } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { CustomCursor, SmoothLoader } from "./components/common";
+import { TargetCursor, SmoothLoader } from "./components/common";
 import { DashboardLayout, LandingLayout } from "./components/Layout";
 import "./styles/globals.css";
 
@@ -46,8 +46,13 @@ const App: React.FC = () => {
       {/* Initial loader */}
       {loading && <SmoothLoader duration={1800} />}
 
-      {/* Custom cursor (desktop only) */}
-      <CustomCursor />
+      {/* Custom target cursor (desktop only) */}
+      <TargetCursor
+        spinDuration={1.6}
+        hideDefaultCursor
+        parallaxOn
+        hoverDuration={0.4}
+      />
 
       <AnimatePresence mode="wait">
         <Suspense fallback={<PageFallback />}>

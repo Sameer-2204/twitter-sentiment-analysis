@@ -3,7 +3,7 @@ export { default as MetricCard } from "./MetricCard";
 export { default as SentimentBadge } from "./SentimentBadge";
 export { default as LoadingSkeleton } from "./LoadingSkeleton";
 export { default as EntranceReveal } from "./EntranceReveal";
-export { default as CustomCursor } from "./CustomCursor";
+export { default as TargetCursor } from "./TargetCursor";
 export { default as SmoothLoader } from "./SmoothLoader";
 export { default as ErrorState } from "./ErrorState";
 export { default as EmptyState } from "./EmptyState";

@@ -22,8 +22,7 @@ function formatError(err: unknown, context: string): null {
     if (err.code === "ERR_NETWORK" || err.message === "Network Error") {
       console.error(
         `${context}: Backend unreachable at ${API_BASE}.\n` +
-        `  → Is the backend running? (python run.py)\n` +
-        `  → Is the Cloudflare tunnel active? (cloudflared tunnel --url http://localhost:8000)\n` +
+        `  → Is the backend running?\n` +
         `  → Is VITE_API_BASE correct in .env?`
       );
     } else if (err.response) {

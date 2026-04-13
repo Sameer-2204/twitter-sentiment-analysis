@@ -1,8 +1,5 @@
 # =============================================================================
-# .dockerignore — Twitter Sentiment Analysis API
-#
-# Keeps the Docker build context small and prevents sensitive/unnecessary
-# files from being sent to the Docker daemon.
+# .dockerignore — Project root (build context for backend Docker image)
 # =============================================================================
 
 # ── Version control ──────────────────────────────────────────
@@ -18,6 +15,7 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+*.egg-info/
 
 # ── Virtual environments ─────────────────────────────────────
 .venv/
@@ -27,28 +25,28 @@ env/
 # ── Environment files (secrets) ──────────────────────────────
 .env
 .env.*
-!.env.example
+!backend/.env.example
 
 # ── IDE ──────────────────────────────────────────────────────
 .vscode/
 .idea/
 
-# ── Tests ────────────────────────────────────────────────────
-tests/
-
-# ── Documentation (not needed in image) ──────────────────────
-*.md
-docs/
-
-# ── Other project directories not needed in backend image ────
+# ── Frontend (not needed in backend image) ───────────────────
 frontend/
+next-app/
+
+# ── Notebooks & scripts (not needed at runtime) ─────────────
 notebooks/
 scripts/
 configs/
+docs/
 logs/
 Microsoft/
 twitter_analysis.egg-info/
-next-app/
+
+# ── Embeddings (large, not needed at runtime) ────────────────
+embeddings/
+gloVE/
 
 # ── Notebooks ────────────────────────────────────────────────
 *.ipynb
@@ -56,7 +54,9 @@ next-app/
 # ── OS artifacts ─────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+*.log
 
-# ── Embeddings (large, not needed at runtime) ────────────────
-embeddings/
-gloVE/
+# ── Misc ─────────────────────────────────────────────────────
+*.bak
+*.tmp
+.vercel/

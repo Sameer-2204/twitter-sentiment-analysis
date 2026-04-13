@@ -1,5 +1,5 @@
 # =============================================================================
-# requirements.txt — Twitter Sentiment Analysis API (Local Development)
+# requirements.txt — Twitter Sentiment Analysis API
 # =============================================================================
 
 # ── Web Framework ─────────────────────────────────────────────
@@ -17,12 +17,4 @@ scikit-learn>=1.3.0
 
 # ── NLP ───────────────────────────────────────────────────────
 nltk>=3.8.1
-
-# ── Deep Learning — TensorFlow (LSTM, BiLSTM, CNN) ───────────
-tensorflow>=2.15.0
-
-# ── Deep Learning — PyTorch (DistilBERT) ─────────────────────
-torch>=2.1.0
-
-# ── HuggingFace Transformers (DistilBERT tokenizer & model) ──
-transformers>=4.36.0
+vaderSentiment>=3.3.2

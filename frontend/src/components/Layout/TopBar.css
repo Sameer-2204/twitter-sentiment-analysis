@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
-  background: rgba(10, 10, 26, 0.75);
+  background: var(--navbar-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-bottom: 1px solid var(--bg-card-border);

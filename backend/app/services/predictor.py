@@ -1,5 +1,5 @@
 """
-services/predictor.py — Loads ML models and exposes a unified prediction
+services/predictor.py - Loads ML models and exposes a unified prediction
 interface.
 
 All models are loaded eagerly at startup and kept resident in memory.
@@ -55,11 +55,11 @@ class SentimentPredictor:
             self.device = "cuda" if torch.cuda.is_available() else "cpu"
             logger.info("PyTorch device: %s", self.device)
         except ImportError:
-            logger.warning("PyTorch not installed — DistilBERT unavailable.")
+            logger.warning("PyTorch not installed - DistilBERT unavailable.")
 
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
     #  Model loading
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
 
     def load_all_models(self) -> None:
         """Eagerly load all model artefacts from disk.
@@ -70,11 +70,11 @@ class SentimentPredictor:
         settings = get_settings()
         total_start = time.time()
 
-        # ── TF-IDF + Logistic Regression ──────────────────────
+        # TF-IDF + Logistic Regression
         self._load_tfidf(settings.TFIDF_VECTORIZER_PATH)
         self._load_pickle_model("logistic_regression", settings.LOGISTIC_REGRESSION_PATH)
 
-        # ── Keras tokenizer + LSTM / BiLSTM / CNN ─────────────
+        # Keras tokenizer + LSTM / BiLSTM / CNN
         self._load_keras_tokenizer(settings.TOKENIZER_PATH)
 
         for name, path in [
@@ -85,7 +85,7 @@ class SentimentPredictor:
             logger.info("Loading %s from %s ...", name, path)
             self._load_keras_model(name, path)
 
-        # ── DistilBERT ────────────────────────────────────────
+        # DistilBERT
         logger.info("Loading distilbert ...")
         self._load_distilbert(
             model_path=settings.DISTILBERT_MODEL_PATH,
@@ -98,11 +98,11 @@ class SentimentPredictor:
         loaded = list(self.models.keys())
         failed = [n for n in settings.MODEL_NAMES if n not in self.models]
         logger.info(
-            "Model loading complete in %.2f s — loaded: %s | failed: %s",
+            "Model loading complete in %.2f s - loaded: %s | failed: %s",
             total_elapsed, loaded or "none", failed or "none",
         )
         for name, elapsed in self.load_times.items():
-            logger.info("  ⏱ %s: %.2f s", name, elapsed)
+            logger.info("  %s: %.2f s", name, elapsed)
 
     def _ensure_model_loaded(self, model_name: str) -> None:
         """Verify the requested model is in memory.
@@ -152,9 +152,9 @@ class SentimentPredictor:
         else:
             raise ValueError(f"Unknown model: {model_name}")
 
-    # ──────────────────────────────────────────────────────────
-    #  Prediction — public interface
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
+    #  Prediction - public interface
+    # ------------------------------------------------------------------
 
     def predict(
         self,
@@ -182,7 +182,7 @@ class SentimentPredictor:
         scores = analyzer.polarity_scores(text)
         compound = scores["compound"]
 
-        # Map VADER scores to label
+        # Map VADER compound score to label
         if compound >= 0.05:
             label = "Positive"
         elif compound <= -0.05:
@@ -190,26 +190,65 @@ class SentimentPredictor:
         else:
             label = "Neutral"
 
-        # Build probability dict from VADER sub-scores
+        # ----------------------------------------------------------
+        # Derive class probabilities from the compound score.
+        #
+        # VADER's raw pos/neg/neu are *token proportions* (% of words
+        # that are positive/negative/neutral), NOT class probabilities.
+        # Using them directly causes confusing results where e.g.
+        # "neutral" bar appears dominant (82%) even for clearly
+        # positive text.  We map the compound score (-1..+1) to a
+        # proper soft probability distribution instead.
+        # ----------------------------------------------------------
+        abs_compound = abs(compound)
+
+        if compound >= 0.05:
+            # Positive: scale compound (0.05-1.0) into dominant p_pos
+            strength = min((abs_compound - 0.05) / 0.95, 1.0)
+            p_pos = 0.40 + 0.58 * strength   # 0.40 - 0.98
+            p_neg = 0.02 + 0.08 * (1 - strength)
+            p_neu = 1.0 - p_pos - p_neg
+        elif compound <= -0.05:
+            # Negative: mirror of positive
+            strength = min((abs_compound - 0.05) / 0.95, 1.0)
+            p_neg = 0.40 + 0.58 * strength
+            p_pos = 0.02 + 0.08 * (1 - strength)
+            p_neu = 1.0 - p_pos - p_neg
+        else:
+            # Neutral: compound is near zero
+            neutrality = 1.0 - abs_compound / 0.05  # 1.0 at 0, 0.0 at +/-0.05
+            p_neu = 0.50 + 0.40 * neutrality         # 0.50 - 0.90
+            p_pos = (1.0 - p_neu) * (0.5 + compound / 0.1)
+            p_neg = 1.0 - p_neu - p_pos
+
+        # Clamp and normalize
+        p_pos = max(p_pos, 0.0)
+        p_neg = max(p_neg, 0.0)
+        p_neu = max(p_neu, 0.0)
+        total_p = p_pos + p_neg + p_neu
+        p_pos /= total_p
+        p_neg /= total_p
+        p_neu /= total_p
+
         prob_dict = {
-            "Positive": round(scores["pos"], 4),
-            "Negative": round(scores["neg"], 4),
-            "Neutral": round(scores["neu"], 4),
+            "Positive": round(p_pos, 4),
+            "Negative": round(p_neg, 4),
+            "Neutral": round(p_neu, 4),
         }
 
-        confidence = max(scores["pos"], scores["neg"], scores["neu"])
+        confidence = prob_dict[label] * 100
         inference_time = time.time() - start
 
         logger.info(
             "predict | model=vader (via %s) | text_len=%d | label=%s | "
             "conf=%.2f%% | compound=%.4f | time=%.3fs",
-            model_name, len(text), label, confidence * 100, compound,
+            model_name, len(text), label, confidence, compound,
             inference_time,
         )
 
         return PredictionResponse(
             label=label,
-            confidence=round(confidence * 100, 2),
+            confidence=round(confidence, 2),
             model_used=model_name,
             probabilities=prob_dict,
             inference_time=round(inference_time, 4),
@@ -238,7 +277,7 @@ class SentimentPredictor:
                     results.append(result)
                 except Exception as exc:
                     logger.error(
-                        "predict_all_models — '%s' failed: %s",
+                        "predict_all_models - '%s' failed: %s",
                         model_name, exc,
                     )
 
@@ -318,13 +357,13 @@ class SentimentPredictor:
         """Check if a specific model is loaded and ready for prediction."""
         return model_name in self.models
 
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
     #  Private loaders
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
 
     def _load_pickle_model(self, name: str, path: Path) -> None:
         if not path.exists():
-            logger.warning("Skipping %s — file not found: %s", name, path)
+            logger.warning("Skipping %s - file not found: %s", name, path)
             self.load_errors[name] = f"file not found at {path}"
             return
         start = time.time()
@@ -334,10 +373,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times[name] = elapsed
             self.load_errors.pop(name, None)
-            logger.info("✓ Loaded %s in %.2f s", name, elapsed)
+            logger.info("Loaded %s in %.2f s", name, elapsed)
         except Exception as exc:
             self.load_errors[name] = str(exc)
-            logger.error("✗ Failed to load %s: %s", name, exc)
+            logger.error("Failed to load %s: %s", name, exc)
 
     def _load_tfidf(self, path: Path) -> None:
         if self.tfidf is not None:
@@ -353,10 +392,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times["tfidf"] = elapsed
             self.load_errors.pop("tfidf", None)
-            logger.info("✓ Loaded TF-IDF vectoriser in %.2f s", elapsed)
+            logger.info("Loaded TF-IDF vectoriser in %.2f s", elapsed)
         except Exception as exc:
             self.load_errors["tfidf"] = str(exc)
-            logger.error("✗ Failed to load TF-IDF: %s", exc)
+            logger.error("Failed to load TF-IDF: %s", exc)
 
     def _load_keras_tokenizer(self, path: Path) -> None:
         if self.keras_tokenizer is not None:
@@ -372,14 +411,14 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times["keras_tokenizer"] = elapsed
             self.load_errors.pop("keras_tokenizer", None)
-            logger.info("✓ Loaded Keras tokenizer in %.2f s", elapsed)
+            logger.info("Loaded Keras tokenizer in %.2f s", elapsed)
         except Exception as exc:
             self.load_errors["keras_tokenizer"] = str(exc)
-            logger.error("✗ Failed to load Keras tokenizer: %s", exc)
+            logger.error("Failed to load Keras tokenizer: %s", exc)
 
     def _load_keras_model(self, name: str, path: Path) -> None:
         if not path.exists():
-            logger.warning("Skipping %s — file not found: %s", name, path)
+            logger.warning("Skipping %s - file not found: %s", name, path)
             self.load_errors[name] = f"file not found at {path}"
             return
         start = time.time()
@@ -418,10 +457,10 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times[name] = elapsed
             self.load_errors.pop(name, None)
-            logger.info("✓ Loaded %s in %.2f s", name, elapsed)
+            logger.info("Loaded %s in %.2f s", name, elapsed)
         except Exception as exc:
             self.load_errors[name] = str(exc)
-            logger.error("✗ Failed to load Keras model %s: %s", name, exc)
+            logger.error("Failed to load Keras model %s: %s", name, exc)
 
     def _load_distilbert(self, model_path: Path, tokenizer_path: Path) -> None:
         if not model_path.exists():
@@ -464,14 +503,14 @@ class SentimentPredictor:
             elapsed = time.time() - start
             self.load_times["distilbert"] = elapsed
             self.load_errors.pop("distilbert", None)
-            logger.info("✓ Loaded DistilBERT in %.2f s (device=%s)", elapsed, self.device)
+            logger.info("Loaded DistilBERT in %.2f s (device=%s)", elapsed, self.device)
         except Exception as exc:
             self.load_errors["distilbert"] = str(exc)
-            logger.error("✗ Failed to load DistilBERT: %s", exc)
+            logger.error("Failed to load DistilBERT: %s", exc)
 
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
     #  Private prediction methods
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
 
     def _predict_logistic(self, cleaned_text: str) -> tuple[np.ndarray, int]:
         model = self.models["logistic_regression"]
@@ -547,9 +586,9 @@ class SentimentPredictor:
         prediction = int(torch.argmax(probabilities).item())
         return probabilities.cpu().numpy(), prediction
 
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
     #  Helpers
-    # ──────────────────────────────────────────────────────────
+    # ------------------------------------------------------------------
 
     @staticmethod
     def _is_tfidf_fitted(vectorizer: Any) -> bool:

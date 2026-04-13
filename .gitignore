@@ -85,6 +85,9 @@ reports/figures/
 # ---------- Misc ----------
 *.bak
 *.tmp
+vite-dev.log
+vite-dev.err.log
 
 .vercel
 .env*.local
+Microsoft/

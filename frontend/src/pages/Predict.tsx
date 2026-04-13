@@ -15,7 +15,6 @@ import {
 import {
   getApiErrorMessage,
   predictSentiment,
-  predictAllModels,
 } from "../lib/api";
 import "./Predict.css";
 
@@ -27,22 +26,14 @@ type Sentiment = "positive" | "negative" | "neutral";
 interface SingleResult {
   sentiment: Sentiment;
   confidence: number;
-  model: string;
   positive_prob: number;
   negative_prob: number;
   neutral_prob: number;
 }
 
-interface ModelResult {
-  model: string;
-  sentiment: Sentiment;
-  confidence: number;
-}
-
 interface HistoryEntry {
   id: number;
   text: string;
-  model: string;
   sentiment: Sentiment;
   confidence: number;
   timestamp: number;
@@ -51,14 +42,6 @@ interface HistoryEntry {
 const SENT_COLORS: Record<Sentiment, string> = {
   positive: "#06d6a0", negative: "#ef476f", neutral: "#ffd166",
 };
-
-const MODELS = [
-  { value: "logistic_regression", label: "Logistic Regression" },
-  { value: "distilbert", label: "DistilBERT" },
-  { value: "cnn", label: "CNN" },
-  { value: "bilstm", label: "BiLSTM" },
-  { value: "lstm", label: "LSTM" },
-];
 
 const HISTORY_KEY = "predictionHistory";
 const MAX_HISTORY = 20;
@@ -80,31 +63,27 @@ const normSentiment = (v: unknown): Sentiment => {
   return "neutral";
 };
 
-const normSingle = (raw: unknown, model: string): SingleResult => {
+const normSingle = (raw: unknown): SingleResult => {
   const d = (raw as Record<string, unknown>) ?? {};
   const conf = pct(d.confidence ?? d.score ?? d.probability);
+
+  // Backend returns { probabilities: { Positive: 0.66, Negative: 0.02, Neutral: 0.32 } }
+  const probs = (d.probabilities && typeof d.probabilities === "object")
+    ? d.probabilities as Record<string, unknown>
+    : {};
+
+  // Check nested probabilities object first, then flat fields
+  const posProb = pct(probs.Positive ?? probs.positive ?? d.positive_prob ?? d.positive ?? 0);
+  const negProb = pct(probs.Negative ?? probs.negative ?? d.negative_prob ?? d.negative ?? 0);
+  const neuProb = pct(probs.Neutral ?? probs.neutral ?? d.neutral_prob ?? d.neutral ?? 0);
+
   return {
     sentiment: normSentiment(d.sentiment ?? d.label ?? d.prediction),
     confidence: conf,
-    model,
-    positive_prob: pct(d.positive_prob ?? d.positive_probability ?? d.positive ?? d.pos_prob ?? 0),
-    negative_prob: pct(d.negative_prob ?? d.negative_probability ?? d.negative ?? d.neg_prob ?? 0),
-    neutral_prob: pct(d.neutral_prob ?? d.neutral_probability ?? d.neutral ?? d.neu_prob ?? 0),
+    positive_prob: posProb,
+    negative_prob: negProb,
+    neutral_prob: neuProb,
   };
-};
-
-const normAllModels = (raw: unknown): ModelResult[] => {
-  const items = Array.isArray(raw) ? raw
-    : (raw as Record<string, unknown>)?.results ?? (raw as Record<string, unknown>)?.predictions ?? [];
-  if (!Array.isArray(items)) return [];
-  return items.map((item) => {
-    const o = (item as Record<string, unknown>) ?? {};
-    return {
-      model: String(o.model ?? o.model_used ?? o.model_name ?? o.name ?? ""),
-      sentiment: normSentiment(o.sentiment ?? o.label ?? o.prediction),
-      confidence: pct(o.confidence ?? o.score ?? o.probability),
-    };
-  });
 };
 
 const loadHistory = (): HistoryEntry[] => {
@@ -116,7 +95,7 @@ const saveHistory = (entries: HistoryEntry[]) => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, MAX_HISTORY)));
 };
 
-const truncate = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + "…" : s;
+const truncate = (s: string, n: number) => s.length > n ? s.slice(0, n - 1) + "\u2026" : s;
 
 /* ── Spinner ──────────────────────────────────────────────────── */
 
@@ -130,16 +109,11 @@ const Spinner = () => (
 
 const Predict: React.FC = () => {
   const [text, setText] = useState("");
-  const [model, setModel] = useState("logistic_regression");
   const [validationError, setValidationError] = useState(false);
 
-  const [singleLoading, setSingleLoading] = useState(false);
-  const [singleResult, setSingleResult] = useState<SingleResult | null>(null);
-  const [singleError, setSingleError] = useState<string | null>(null);
-
-  const [allLoading, setAllLoading] = useState(false);
-  const [allResults, setAllResults] = useState<ModelResult[] | null>(null);
-  const [allError, setAllError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<SingleResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const [history, setHistory] = useState<HistoryEntry[]>(loadHistory);
 
@@ -150,58 +124,28 @@ const Predict: React.FC = () => {
     saveHistory(updated);
   };
 
-  /* ── Analyze single ──────────────────────────────────────── */
+  /* ── Analyze ──────────────────────────────────────────────── */
   const handleAnalyze = async () => {
     if (!text.trim()) { setValidationError(true); return; }
     setValidationError(false);
-    setSingleLoading(true); setSingleError(null); setSingleResult(null); setAllResults(null);
+    setLoading(true); setError(null); setResult(null);
     try {
-      const res = await predictSentiment(text, model);
-      const result = normSingle(res, MODELS.find(m => m.value === model)?.label ?? model);
-      setSingleResult(result);
-      addToHistory({ text: text.trim(), model: result.model, sentiment: result.sentiment, confidence: result.confidence });
+      const res = await predictSentiment(text, "distilbert");
+      const parsed = normSingle(res);
+      setResult(parsed);
+      addToHistory({ text: text.trim(), sentiment: parsed.sentiment, confidence: parsed.confidence });
     } catch (err) {
-      setSingleError(getApiErrorMessage(err, "Prediction failed."));
+      setError(getApiErrorMessage(err, "Prediction failed."));
     }
-    setSingleLoading(false);
+    setLoading(false);
   };
-
-  /* ── Compare all ─────────────────────────────────────────── */
-  const handleCompareAll = async () => {
-    if (!text.trim()) { setValidationError(true); return; }
-    setValidationError(false);
-    setAllLoading(true); setAllError(null); setAllResults(null); setSingleResult(null);
-    try {
-      const res = await predictAllModels(text);
-      const results = normAllModels(res);
-      setAllResults(results);
-      if (results.length) {
-        const best = results.reduce((a, b) => b.confidence > a.confidence ? b : a, results[0]);
-        addToHistory({ text: text.trim(), model: "All Models", sentiment: best.sentiment, confidence: best.confidence });
-      }
-    } catch (err) {
-      setAllError(getApiErrorMessage(err, "Comparison failed."));
-    }
-    setAllLoading(false);
-  };
-
-  /* ── Consensus ───────────────────────────────────────────── */
-  const consensus = allResults ? (() => {
-    const counts: Record<string, number> = {};
-    allResults.forEach(r => { counts[r.sentiment] = (counts[r.sentiment] || 0) + 1; });
-    const max = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
-    if (max && max[1] >= Math.ceil(allResults.length / 2)) {
-      return { agree: true, sentiment: max[0] as Sentiment, count: max[1], total: allResults.length };
-    }
-    return { agree: false, sentiment: "neutral" as Sentiment, count: 0, total: allResults.length };
-  })() : null;
 
   return (
     <div className="predict-page">
       {/* ═══ SECTION 1 — Input ═══ */}
       <GlassCard hoverable={false} className="predict__input-card">
         <h2 className="predict__title">Analyze Sentiment</h2>
-        <p className="predict__subtitle">Enter any tweet or text to analyze its sentiment</p>
+        <p className="predict__subtitle">Enter any tweet or text to analyze its sentiment using VADER</p>
 
         <div className={`predict__textarea-wrap ${validationError ? "predict__textarea-wrap--error" : ""}`}>
           <textarea
@@ -215,60 +159,45 @@ const Predict: React.FC = () => {
         </div>
         {validationError && <span className="predict__validation">Please enter text to analyze</span>}
 
-        <div className="predict__model-row">
-          <div className="predict__model-group">
-            <label className="predict__model-label">Select Model</label>
-            <select className="predict__model-select" value={model} onChange={e => setModel(e.target.value)}>
-              {MODELS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-            </select>
-          </div>
-        </div>
-
         <div className="predict__btn-row">
           <button className="predict__btn-primary" onClick={handleAnalyze}
-            disabled={singleLoading || allLoading}>
-            {singleLoading ? <><Spinner /> Analyzing...</> : "Analyze"}
-          </button>
-          <button className="predict__btn-secondary" onClick={handleCompareAll}
-            disabled={singleLoading || allLoading}>
-            {allLoading ? <><Spinner /> Comparing...</> : "Compare All Models"}
+            disabled={loading}>
+            {loading ? <><Spinner /> Analyzing...</> : "Analyze Sentiment"}
           </button>
         </div>
 
-        {singleError && <p className="predict__error-msg">{singleError}</p>}
-        {allError && <p className="predict__error-msg">{allError}</p>}
+        {error && <p className="predict__error-msg">{error}</p>}
       </GlassCard>
 
-      {/* ═══ SECTION 2 — Single Result ═══ */}
+      {/* ═══ SECTION 2 — Result ═══ */}
       <AnimatePresence>
-        {singleResult && (
+        {result && (
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }}>
             <GlassCard hoverable={false} className="predict__result-card"
               style={{
-                borderColor: SENT_COLORS[singleResult.sentiment] + "4d",
-                boxShadow: `0 0 30px ${SENT_COLORS[singleResult.sentiment]}33`,
+                borderColor: SENT_COLORS[result.sentiment] + "4d",
+                boxShadow: `0 0 30px ${SENT_COLORS[result.sentiment]}33`,
               } as React.CSSProperties}>
               <div className="predict__result-top">
                 <div className="predict__result-left">
                   <span className="predict__result-label"
-                    style={{ color: SENT_COLORS[singleResult.sentiment] }}>
-                    {singleResult.sentiment.toUpperCase()}
+                    style={{ color: SENT_COLORS[result.sentiment] }}>
+                    {result.sentiment.toUpperCase()}
                   </span>
-                  <span className="predict__result-model">Model: {singleResult.model}</span>
                   <span className="predict__result-conf mono">
-                    {singleResult.confidence.toFixed(1)}%
+                    {result.confidence.toFixed(1)}%
                   </span>
                 </div>
                 <div className="predict__result-right">
                   <AnimatedPlot
                     data={[{
                       type: "indicator", mode: "gauge+number",
-                      value: singleResult.confidence,
+                      value: result.confidence,
                       number: { suffix: "%", font: { color: "#e6f1ff", size: 28 } },
                       gauge: {
                         axis: { range: [0, 100], tickfont: { color: "#aab6d3", size: 10 } },
-                        bar: { color: SENT_COLORS[singleResult.sentiment] },
+                        bar: { color: SENT_COLORS[result.sentiment] },
                         bgcolor: "rgba(255,255,255,0.04)",
                         borderwidth: 0,
                         steps: [
@@ -290,7 +219,7 @@ const Predict: React.FC = () => {
               <div className="predict__breakdown">
                 <h4 className="predict__breakdown-title">Confidence Breakdown</h4>
                 {(["positive", "negative", "neutral"] as Sentiment[]).map(s => {
-                  const val = singleResult[`${s}_prob` as keyof SingleResult] as number;
+                  const val = result[`${s}_prob` as keyof SingleResult] as number;
                   return (
                     <div className="predict__bar-row" key={s}>
                       <span className="predict__bar-label" style={{ color: SENT_COLORS[s] }}>
@@ -313,70 +242,7 @@ const Predict: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* ═══ SECTION 3 — All Models Comparison ═══ */}
-      <AnimatePresence>
-        {allResults && (
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5 }}>
-
-            <div className="predict__all-cards">
-              {allResults.map((r, i) => (
-                <motion.div key={r.model} initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
-                  <GlassCard hoverable className="predict__model-card">
-                    <span className="predict__mc-name">{r.model}</span>
-                    <SentimentBadge sentiment={r.sentiment} />
-                    <span className="predict__mc-conf mono">{r.confidence.toFixed(1)}%</span>
-                    <div className="predict__mc-bar-track">
-                      <motion.div className="predict__mc-bar-fill"
-                        style={{ backgroundColor: SENT_COLORS[r.sentiment] }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${r.confidence}%` }}
-                        transition={{ duration: 0.6, delay: i * 0.08 }} />
-                    </div>
-                  </GlassCard>
-                </motion.div>
-              ))}
-            </div>
-
-            {consensus && (
-              <GlassCard hoverable={false} className={`predict__consensus ${consensus.agree ? "predict__consensus--agree" : "predict__consensus--mixed"}`}>
-                {consensus.agree
-                  ? <span>{consensus.count} out of {consensus.total} models agree: <strong style={{ color: SENT_COLORS[consensus.sentiment] }}>
-                      {consensus.sentiment.toUpperCase()}</strong> ✅</span>
-                  : <span>Models disagree — mixed results ⚠️</span>}
-              </GlassCard>
-            )}
-
-            <GlassCard hoverable={false} className="predict__all-chart-card">
-              <AnimatedPlot
-                data={[{
-                  type: "bar", orientation: "h",
-                  y: allResults.map(r => r.model),
-                  x: allResults.map(r => r.confidence),
-                  marker: { color: allResults.map(r => SENT_COLORS[r.sentiment]) },
-                  text: allResults.map(r => `${r.confidence.toFixed(1)}%`),
-                  textposition: "outside", textfont: { color: "#e6f1ff", size: 12 },
-                  hovertemplate: "%{y}: %{x:.1f}%<extra></extra>",
-                }]}
-                layout={{
-                  autosize: true, height: 220,
-                  paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
-                  margin: { l: 140, r: 60, t: 10, b: 30 },
-                  xaxis: { range: [0, 105], color: "#aab6d3", gridcolor: "rgba(255,255,255,0.04)",
-                    zeroline: false, tickfont: { color: "#aab6d3", size: 11 } },
-                  yaxis: { color: "#aab6d3", tickfont: { color: "#aab6d3", size: 12 } },
-                  font: { color: "#e6f1ff" },
-                }}
-                config={{ displayModeBar: false, responsive: true }}
-                style={{ width: "100%", height: 220 }}
-              />
-            </GlassCard>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ═══ SECTION 4 — Prediction History ═══ */}
+      {/* ═══ SECTION 3 — Prediction History ═══ */}
       <GlassCard hoverable={false} className="predict__history-card">
         <div className="predict__history-hdr">
           <h3>Recent Predictions</h3>
@@ -393,14 +259,13 @@ const Predict: React.FC = () => {
           <div className="predict__history-table-wrap">
             <table className="predict__history-table">
               <thead><tr>
-                <th>#</th><th>Text</th><th>Model</th><th>Result</th><th>Confidence</th>
+                <th>#</th><th>Text</th><th>Result</th><th>Confidence</th>
               </tr></thead>
               <tbody>
                 {history.map((h, i) => (
                   <tr key={h.id}>
                     <td className="mono">{i + 1}</td>
                     <td title={h.text}>{truncate(h.text, 60)}</td>
-                    <td>{h.model}</td>
                     <td><SentimentBadge sentiment={h.sentiment} /></td>
                     <td className="mono">{h.confidence.toFixed(1)}%</td>
                   </tr>
