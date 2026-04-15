@@ -542,8 +542,8 @@ const Home: React.FC = () => {
                     <VariableProximity
                       label="Read the emotional"
                       className="hp__hero-title-proximity"
-                      fromFontVariationSettings="'wght' 400, 'opsz' 9"
-                      toFontVariationSettings="'wght' 700, 'opsz' 40"
+                      fromFontVariationSettings="'wght' 420, 'opsz' 12"
+                      toFontVariationSettings="'wght' 620, 'opsz' 24"
                       containerRef={heroRef}
                       radius={100}
                       falloff="linear"
@@ -553,8 +553,8 @@ const Home: React.FC = () => {
                     <VariableProximity
                       label="pulse of Twitter with a"
                       className="hp__hero-title-proximity"
-                      fromFontVariationSettings="'wght' 400, 'opsz' 9"
-                      toFontVariationSettings="'wght' 700, 'opsz' 40"
+                      fromFontVariationSettings="'wght' 420, 'opsz' 12"
+                      toFontVariationSettings="'wght' 620, 'opsz' 24"
                       containerRef={heroRef}
                       radius={100}
                       falloff="linear"
@@ -564,8 +564,8 @@ const Home: React.FC = () => {
                     <VariableProximity
                       label="benchmarked AI stack."
                       className="hp__hero-title-proximity"
-                      fromFontVariationSettings="'wght' 400, 'opsz' 9"
-                      toFontVariationSettings="'wght' 700, 'opsz' 40"
+                      fromFontVariationSettings="'wght' 420, 'opsz' 12"
+                      toFontVariationSettings="'wght' 620, 'opsz' 24"
                       containerRef={heroRef}
                       radius={100}
                       falloff="linear"
@@ -583,7 +583,7 @@ const Home: React.FC = () => {
 
               <Reveal delay={0.3}>
                 <div className="hp__hero-stats">
-                  <span className="hp__hero-stat"><strong>1.6M</strong> tweets</span>
+                  <span className="hp__hero-stat"><strong>16.5K+</strong> tweets</span>
                   <span className="hp__hero-stat-dot">·</span>
                   <span className="hp__hero-stat"><strong>5</strong> models</span>
                   <span className="hp__hero-stat-dot">·</span>
@@ -759,7 +759,7 @@ const Home: React.FC = () => {
           <div className="hp__container">
             <Reveal>
               <div className="hp__numbers-row">
-                <AnimStat value={1.6} decimals={1} suffix="M+" label="Tweets analyzed" color="var(--accent-primary)" />
+                <AnimStat value={16.5} decimals={1} suffix="K+" label="Tweets analyzed" color="var(--accent-primary)" />
                 <div className="hp__numbers-divider" />
                 <AnimStat value={5} label="ML models trained" color="var(--sentiment-positive)" />
                 <div className="hp__numbers-divider" />
@@ -914,7 +914,7 @@ const Home: React.FC = () => {
           <div className="hp__container hp__footer-inner">
             <div className="hp__footer-left">
               <strong>Twitter Sentiment Analyzer</strong>
-              <span>Benchmarking ML models across 1.6M tweets.</span>
+              <span>Benchmarking ML models across 16.5K+ tweets.</span>
             </div>
             <div className="hp__footer-links">
               <Link to="/dashboard">Dashboard</Link>

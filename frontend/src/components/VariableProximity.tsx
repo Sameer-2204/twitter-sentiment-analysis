@@ -184,13 +184,13 @@ const VariableProximity = forwardRef<HTMLSpanElement, VariableProximityProps>(
     let letterIndex = 0;
 
     return (
-      <span
-        ref={ref}
-        className={`${className} variable-proximity`}
-        onClick={onClick}
-        style={{ display: "inline", ...style }}
-        {...restProps}
-      >
+        <span
+          ref={ref}
+          className={`${className} variable-proximity`}
+          onClick={onClick}
+          style={style}
+          {...restProps}
+        >
         {words.map((word, wordIndex) => (
           <span
             key={wordIndex}

@@ -8,7 +8,6 @@
   inset: calc(var(--border-size) * -1);
   border: var(--border-size) solid transparent;
   border-radius: calc(var(--radius) * 1px);
-  background-attachment: fixed;
   background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
   background-repeat: no-repeat;
   background-position: 50% 50%;
@@ -36,7 +35,7 @@
     ),
     transparent 100%
   );
-  filter: brightness(2);
+  filter: brightness(1.35);
 }
 
 [data-glow]::after {
@@ -55,8 +54,8 @@
   will-change: filter;
   opacity: var(--outer, 1);
   border-radius: calc(var(--radius) * 1px);
-  border-width: calc(var(--border-size) * 20);
-  filter: blur(calc(var(--border-size) * 10));
+  border-width: calc(var(--border-size) * 16);
+  filter: blur(calc(var(--border-size) * 7));
   background: none;
   pointer-events: none;
   border: none;
@@ -74,4 +73,5 @@
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   overflow: hidden;
+  isolation: isolate;
 }
