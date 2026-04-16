@@ -1,0 +1,26 @@
+.sentiment-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  text-transform: capitalize;
+}
+
+.sentiment-badge--positive {
+  background: var(--sentiment-positive-bg);
+  color: var(--sentiment-positive);
+}
+
+.sentiment-badge--negative {
+  background: var(--sentiment-negative-bg);
+  color: var(--sentiment-negative);
+}
+
+.sentiment-badge--neutral {
+  background: var(--sentiment-neutral-bg);
+  color: var(--sentiment-neutral);
+}
