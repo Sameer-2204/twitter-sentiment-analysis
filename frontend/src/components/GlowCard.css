@@ -11,35 +11,25 @@
   background-size: calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)));
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  -webkit-mask-clip: padding-box, border-box;
   -webkit-mask-composite: xor;
+  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  mask-clip: padding-box, border-box;
+  mask-composite: exclude;
 }
 
 [data-glow]::before {
-  background-image: radial-gradient(
-    calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
-    calc(var(--x, 0) * 1px)
-    calc(var(--y, 0) * 1px),
-    hsl(
-      var(--hue, 210)
-      calc(var(--saturation, 100) * 1%)
-      calc(var(--lightness, 50) * 1%) / var(--border-spot-opacity, 1)
-    ),
-    transparent 100%
-  );
+  background-image: radial-gradient(calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+      hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 50) * 1%) / var(--border-spot-opacity, 1)),
+      transparent 100%);
   filter: brightness(1.35);
 }
 
 [data-glow]::after {
-  background-image: radial-gradient(
-    calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
-    calc(var(--x, 0) * 1px)
-    calc(var(--y, 0) * 1px),
-    hsl(0 100% 100% / var(--border-light-opacity, 1)),
-    transparent 100%
-  );
+  background-image: radial-gradient(calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at calc(var(--x, 0) * 1px) calc(var(--y, 0) * 1px),
+      hsl(0 100% 100% / var(--border-light-opacity, 1)),
+      transparent 100%);
 }
 
 [data-glow] [data-glow] {
@@ -55,7 +45,7 @@
   border: none;
 }
 
-[data-glow] > [data-glow]::before {
+[data-glow]>[data-glow]::before {
   inset: -10px;
   border-width: 10px;
 }
